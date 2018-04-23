@@ -548,13 +548,13 @@ function getBase() {
     //base.developerEmail = x; /* developer email in generated pom.xml */
     //base.developerOrganization = x; /* developer organization in generated pom.xml */
     //base.developerOrganizationUrl = x; /* developer organization URL in generated pom.xml */
-    base.gitUserId = 'Mermade'; /* Git user ID, e.g. swagger-api. */
+    base.gitUserId = 'ilinyhsergey'; /* Git user ID, e.g. swagger-api. */
     base.gitRepoId = 'openapi-codegen'; /* Git repo ID, e.g. swagger-codegen. */
     base.licenseName = 'Unlicense'; /* The name of the license */
     base.projectLicenseName = 'Unlicense'; /* The name of the license */
     base.licenseUrl = 'https://unlicense.org'; /* The URL of the license */
     base.projectLicenseUrl = 'https://unlicense.org'; /* The URL of the license */
-    base.projectUrl = 'https://github.com/Mermade/openapi-codegen';
+    base.projectUrl = 'https://github.com/ilinyhsergey/openapi-codegen';
     base.localVariablePrefix = ''; /* prefix for generated code members and local variables */
     base.serializableModel = true; /* boolean - toggle "implements Serializable" for generated models */
     base.bigDecimalAsString = false; /* Treat BigDecimal values as Strings to avoid precision loss. */
@@ -875,7 +875,7 @@ function transform(api, defaults, callback) {
                 }
 
                 if (entry.name && state.depth<=1) {
-                    entry.nameInCamelCase = Case.pascal(entry.name); // for erlang-client
+                    // entry.nameInCamelCase = Case.pascal(entry.name); // for erlang-client
                     entry.datatypeWithEnum = s+'.'+entry.name+'Enum';
                     entry.enumName = entry.name+'Enum';
                     model.hasEnums = true;
