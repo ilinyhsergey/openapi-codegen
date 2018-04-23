@@ -11,7 +11,7 @@
             "format": "swagger",
             "version": "2.0",
             "converter": {
-                "url": "https://github.com/mermade/swagger2openapi",
+                "url": "https://github.com/ilinyhsergey/swagger2openapi",
                 "version": "2.6.3"
             }
         }

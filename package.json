@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mermade/openapi-codegen.git"
+    "url": "git+https://github.com/ilinyhsergey/openapi-codegen.git"
   },
   "keywords": [
     "openapi",
@@ -22,9 +22,9 @@
   "author": "Mike Ralphson",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Mermade/openapi-codegen/issues"
+    "url": "https://github.com/ilinyhsergey/openapi-codegen/issues"
   },
-  "homepage": "https://github.com/Mermade/openapi-codegen#readme",
+  "homepage": "https://github.com/ilinyhsergey/openapi-codegen#readme",
   "dependencies": {
     "adm-zip": "^0.4.7",
     "case": "^1.5.4",

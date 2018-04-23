@@ -14,8 +14,8 @@ project. If this is not possible, new templates can be added here first.
 
 ## TODO items
 
-* [GitHub search](https://github.com/Mermade/openapi-codegen/search?utf8=%E2%9C%93&q=todo+language%3Ajavascript&type=)
+* [GitHub search](https://github.com/ilinyhsergey/openapi-codegen/search?utf8=%E2%9C%93&q=todo+language%3Ajavascript&type=)
 
 ## Known bugs
 
-* [GitHub search](https://github.com/Mermade/openapi-codegen/search?utf8=%E2%9C%93&q=fixme+language%3Ajavascript&type=)
+* [GitHub search](https://github.com/ilinyhsergey/openapi-codegen/search?utf8=%E2%9C%93&q=fixme+language%3Ajavascript&type=)

@@ -8,7 +8,7 @@
         "releaseNote": "Initial commit",
         "npmName": "change-me",
         "npmVersion": "1.0.0",
-        "npmRepository": "https://github.com/mermade/change-me"
+        "npmRepository": "https://github.com/ilinyhsergey/change-me"
     },
     "directories": [ "api", "model" ],
     "partials": {
