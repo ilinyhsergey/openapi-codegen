@@ -8,3 +8,4 @@ dev/
 dist/
 issues/
 *.swp
+.idea/*
