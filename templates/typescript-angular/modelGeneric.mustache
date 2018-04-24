@@ -8,4 +8,5 @@ export interface {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{
     {{/description}}
     {{#isReadOnly}}readonly {{/isReadOnly}}{{name}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{datatype}}}{{/isEnum}};
 {{/vars}}
-}{{>modelGenericEnums}}
+}
+{{>modelGenericEnums}}

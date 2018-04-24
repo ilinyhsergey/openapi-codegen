@@ -201,8 +201,8 @@ function convertOperation(op,verb,path,pathItem,obj,api) {
         parameter.isBoolean = (param.schema.type === 'boolean');
         parameter.isPrimitiveType = (!param.schema["x-oldref"]);
         parameter.dataFormat = param.schema.format;
-        parameter.isDate = (parameter.dataFormat == 'date');
-        parameter.isDateTime = (parameter.dataFormat == 'date-time');
+        parameter.isDate = (parameter.dataFormat === 'date');
+        parameter.isDateTime = (parameter.dataFormat === 'date-time');
         parameter.description = param.description||'';
         parameter.unescapedDescription = param.description;
         parameter.defaultValue = param.default;
@@ -533,12 +533,30 @@ const typeMaps = {
     }
 };
 
+const type4ImportMaps = {
+    nop: function(type,required,schema) {
+        return undefined;
+    },
+    typescript: function(type,required,schema) {
+        let result = '';
+        if (type === 'array') {
+            if (schema.items && schema.items.type) {
+                result = type4ImportMap(schema.items.type,false,schema.items);
+            }
+        } else if (type === 'object') {
+            result = (schema && schema.xml && schema.xml.name) || '';
+        }
+        return result;
+    }
+};
+
 const reservedWords = {
     nop: [],
     go: [ 'type' ]
 };
 
 let typeMap = typeMaps.nop;
+let type4ImportMap = type4ImportMaps.nop;
 let markdownPP = markdownPPs.nop;
 let reserved = reservedWords.nop;
 
@@ -686,6 +704,7 @@ function transform(api, defaults, callback) {
 
     let lang = (defaults.language||'').toLowerCase();
     if (typeMaps[lang]) typeMap = typeMaps[lang];
+    if (type4ImportMaps[lang]) type4ImportMap = type4ImportMaps[lang];
     if (reservedWords[lang]) reserved = reservedWords[lang];
 
     let prime = getPrime(api,defaults); // defaults which depend in some way on the api definition
@@ -852,7 +871,8 @@ function transform(api, defaults, callback) {
                 entry.required = (parent.required && parent.required.indexOf(entry.name)>=0)||false;
                 entry.isNotRequired = !entry.required;
                 entry.readOnly = !!schema.readOnly;
-                entry.type = typeMap(entry.type,entry.required,schema);
+                entry.type = typeMap(schema.type,entry.required,schema);
+                entry.type4Import = type4ImportMap(schema.type,entry.required,schema);
                 entry.datatype = entry.type; //?
                 entry.jsonSchema = safeJson(schema,null,2);
                 for (let p in schemaProperties) {

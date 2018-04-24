@@ -5,6 +5,7 @@
 import { {{classname}} } from './{{filename}}';
 {{/tsImports}}
 
+import { {{#vars}}{{#type4Import}}{{type4Import}}, {{/type4Import}}{{/vars}} } from "./models";
 
 {{#description}}
 /**
