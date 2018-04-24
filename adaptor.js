@@ -823,6 +823,7 @@ function transform(api, defaults, callback) {
     if (api.servers && api.servers.length) {
         let u = api.servers[0].url;
         let up = url.parse(u);
+        obj.protocol = up.protocol;
         obj.host = up.host;
         obj.basePath = up.path;
         obj.basePathWithoutHost = up.path;

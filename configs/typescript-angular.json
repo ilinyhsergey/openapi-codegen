@@ -2,9 +2,9 @@
   "defaults": {
     "language": "typescript",
     "classPrefix": "",
-    "gitUserId": "",
-    "gitRepoId": "",
-    "releaseNote": "Initial commit",
+    "gitUserId": "GIT_USER_ID",
+    "gitRepoId": "GIT_REPO_ID",
+    "releaseNote": "Minor update",
     "useHttpClient": true,
     "httpMethodCase": "original",
     "injectionToken": "InjectionToken",
