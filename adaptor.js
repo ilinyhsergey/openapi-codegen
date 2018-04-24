@@ -192,7 +192,7 @@ function convertOperation(op,verb,path,pathItem,obj,api) {
         parameter.optional = !parameter.required;
         if (parameter.required) operation.hasRequiredParams = true;
         if (!parameter.required) operation.hasOptionalParams = true;
-        parameter.dataType = typeMap(param.schema.type,parameter.required,param.schema);
+        parameter.dataType = typeMap(param.schema.type,parameter.required,param.schema,api.components.schemas);
         parameter["%dataType%"] = parameter.dataType; // bug in typescript-fetch template? trying to use {{{ with different delimiters
         for (let p of schemaProperties) {
             if (typeof param.schema[p] !== 'undefined') parameter[p] = param.schema[p];
@@ -276,7 +276,7 @@ function convertOperation(op,verb,path,pathItem,obj,api) {
         operation.bodyParam.optional = !operation.bodyParam.required;
         if (operation.bodyParam.required) operation.hasRequiredParams = true;
         if (!operation.bodyParam.required) operation.hasOptionalParams = true;
-        operation.bodyParam.dataType = typeMap('object',operation.bodyParam.required,{}); // can be changed below
+        operation.bodyParam.dataType = typeMap('object',operation.bodyParam.required,{},api.components.schemas); // can be changed below
         operation.bodyParam.description = op.requestBody.description||'';
         operation.bodyParam.schema = {};
         operation.bodyParam.isEnum = false; // TODO?
@@ -300,7 +300,7 @@ function convertOperation(op,verb,path,pathItem,obj,api) {
             }
             if (contentType.schema.type) {
                 operation.bodyParam.type = contentType.schema.type;
-                operation.bodyParam.dataType = typeMap(contentType.schema.type,operation.bodyParam.required,contentType.schema); // this is the below mentioned
+                operation.bodyParam.dataType = typeMap(contentType.schema.type,operation.bodyParam.required,contentType.schema,api.components.schemas); // this is the below mentioned
             }
         }
         operation.bodyParam["%dataType%"] = operation.bodyParam.dataType; // bug in typescript-fetch template?
@@ -327,7 +327,7 @@ function convertOperation(op,verb,path,pathItem,obj,api) {
         entry.jsonSchema = safeJson({ schema: entry.schema },null,2);
         if (response.content) {
             entry.baseType = 'object';
-            entry.dataType = typeMap(entry.baseType,false,{});
+            entry.dataType = typeMap(entry.baseType,false,{},api.components.schemas);
             let contentType = Object.values(response.content)[0];
             let mt = {};
             mt.mediaType = Object.keys(response.content)[0];
@@ -345,7 +345,7 @@ function convertOperation(op,verb,path,pathItem,obj,api) {
                 entry.jsonSchema = safeJson({schema:entry.schema},null,2);
                 entry.baseType = contentType.schema.type;
                 entry.isPrimitiveType = true;
-                entry.dataType = typeMap(contentType.schema.type,false,entry.schema);
+                entry.dataType = typeMap(contentType.schema.type,false,entry.schema,api.components.schemas);
                 if (contentType.schema["x-oldref"]) {
                     entry.dataType = contentType.schema["x-oldref"].replace('#/components/schemas/','');
                     entry.isPrimitiveType = false;
@@ -489,31 +489,40 @@ const markdownPPs = {
 };
 
 const typeMaps = {
-    nop: function(type,required,schema) {
+    nop: function(type,required,schema,schemas) {
         return type;
     },
-    java: function(type,required,schema) {
+    java: function(type,required,schema,schemas) {
         let result = type;
         if (!required) result += '?';
         return result;
     },
-    javascript: function(type,required,schema) {
+    javascript: function(type,required,schema,schemas) {
         let result = type;
         if (result === 'integer') result = 'number';
         return result;
     },
-    typescript: function(type,required,schema) {
+    typescript: function(type,required,schema,schemas) {
         let result = type;
-        if (result === 'integer') result = 'number';
-        if (result === 'array') {
+        if (type === 'integer'){
+            result = 'number';
+        } else if (type === 'array') {
             result = 'Array';
             if (schema.items && schema.items.type) {
-                result += '<'+typeMap(schema.items.type,false,schema.items)+'>';
+                result += '<'+typeMap(schema.items.type,false,schema.items,schemas)+'>';
             }
+        } else if (type === 'object') {
+            result = 'object'; // todo
+        } else if (!type) {
+            // result = 'string';
+            const refSchema = getTypeByRef(schema.$ref, schemas);
+            result = typeMap(refSchema.type,required,refSchema,schemas);
+        } else if (type === 'string') {
+            result = 'string';
         }
         return result;
     },
-    go: function(type,required,schema) {
+    go: function(type,required,schema,schemas) {
         let result = type;
         if (result === 'integer') result = 'int';
         if (result === 'boolean') result = 'bool';
@@ -521,12 +530,39 @@ const typeMaps = {
         if (result === 'array') {
             result = '[100]'; //!
             if (schema.items && schema.items.type) {
-                result += typeMap(schema.items.type,false,schema.items);
+                result += typeMap(schema.items.type,false,schema.items,schemas);
             }
         }
         return result;
     }
 };
+
+function getTypeByRef($ref, schemas) {
+    let pathNodes = $ref.split('/');
+    if (pathNodes.length <= 0) {
+        return;
+    }
+    if (pathNodes[0] === '#') {
+        pathNodes.splice(0,1);
+    }
+    return deepFind(schemas, pathNodes)
+}
+
+function deepFind(obj, paths) {
+    // let paths = path.split('.');
+    let  current = obj;
+    let  i;
+
+    for (i = 0; i < paths.length; ++i) {
+        const val = current[paths[i]];
+        if (!val) {
+            current = val;
+        } else {
+            return val;
+        }
+    }
+    return current;
+}
 
 const reservedWords = {
     nop: [],
@@ -846,7 +882,7 @@ function transform(api, defaults, callback) {
                 entry.required = (parent.required && parent.required.indexOf(entry.name)>=0)||false;
                 entry.isNotRequired = !entry.required;
                 entry.readOnly = !!schema.readOnly;
-                entry.type = typeMap(entry.type,entry.required,schema);
+                entry.type = typeMap(entry.type,entry.required,schema,api.components.schemas);
                 entry.datatype = entry.type; //?
                 entry.jsonSchema = safeJson(schema,null,2);
                 for (let p in schemaProperties) {
