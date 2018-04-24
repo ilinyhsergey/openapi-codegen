@@ -918,6 +918,8 @@ function transform(api, defaults, callback) {
                 }
             });
             model.vars = convertArray(model.vars);
+            model.importModels = model.vars.filter(entry => entry.type4Import).map(entry => entry.type4Import);
+            model.hasImportModels = !!model.importModels.length;
             container.model = model;
             container.importPath = model.name;
             obj.models.push(container);
