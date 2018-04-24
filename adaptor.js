@@ -875,7 +875,7 @@ function transform(api, defaults, callback) {
                     model.allowableValues.enumVars = [];
                     model["allowableValues.values"] = schema.enum;
                     for (let v of schema.enum) {
-                        let e = { name: v, value: '\''+v+'\'' }; // insane, why aren't the quotes in the template?
+                        let e = { name: v, value: v };
                         model.allowableValues.enumVars.push(e);
                     }
                     model.allowableValues.enumVars = convertArray(model.allowableValues.enumVars);
@@ -883,8 +883,13 @@ function transform(api, defaults, callback) {
 
                 if (entry.name && state.depth<=1) {
                     // entry.nameInCamelCase = Case.pascal(entry.name); // for erlang-client
-                    entry.datatypeWithEnum = s+'.'+entry.name+'Enum';
-                    entry.enumName = entry.name+'Enum';
+                    if (defaults.language === 'typescript') {
+                        entry.datatypeWithEnum = s+'.'+Case.pascal(entry.name)+'Enum';
+                        entry.enumName = Case.pascal(entry.name)+'Enum';
+                    } else {
+                        entry.datatypeWithEnum = s+'.'+entry.name+'Enum';
+                        entry.enumName = entry.name+'Enum';
+                    }
                     model.hasEnums = true;
                     model.vars.push(entry);
                 }
