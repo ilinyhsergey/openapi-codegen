@@ -5,7 +5,7 @@ import { Configuration } from './configuration';
 
 {{#apiInfo}}
 {{#apis}}
-import { {{classname}} } from './{{importPath}}';
+import { {{classname}} } from './api/{{classFilename}}';
 {{/apis}}
 {{/apiInfo}}
 
@@ -22,7 +22,7 @@ export class ApiModule {
         return {
             ngModule: ApiModule,
             providers: [ { provide: Configuration, useFactory: configurationFactory } ]
-        }
+        };
     }
 
     constructor( @Optional() @SkipSelf() parentModule: ApiModule,

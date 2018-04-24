@@ -20,13 +20,18 @@ import '../rxjs-operators';
 {{/useHttpClient}}
 
 {{#imports}}
-import { {{classname}} } from '../{{filename}}';
+// import { {{classname}} } from '../{{filename}}';
 {{/imports}}
+
+{{#models}}{{#model}}
+import { {{classname}} } from '../model/{{classFilename}}';
+{{/model}}{{/models}}
+
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 {{#withInterfaces}}
-import { {{classname}}Interface }                            from './{{classname}}Interface';
+import { {{classname}}Interface }                            from './{{classFilename}}Interface';
 {{/withInterfaces}}
 
 {{#operations}}
@@ -64,7 +69,7 @@ export class {{classname}} {
      */
     private canConsumeForm(consumes: string[]): boolean {
         const form = 'multipart/form-data';
-        for (let consume of consumes) {
+        for (const consume of consumes) {
             if (form === consume) {
                 return true;
             }
@@ -149,7 +154,7 @@ export class {{classname}} {
         }
         {{/isListContainer}}
         {{^isListContainer}}
-        if ({{paramName}} !== undefined) {
+        if ({{paramName}} !== undefined && {{paramName}} !== null) {
         {{#isDateTime}}
             {{#useHttpClient}}queryParameters = {{/useHttpClient}}queryParameters.set('{{baseName}}', <any>{{paramName}}.toISOString());
         {{/isDateTime}}
@@ -179,14 +184,14 @@ export class {{classname}} {
         // authentication ({{name}}) required
 {{#isApiKey}}
 {{#isKeyInHeader}}
-        if (this.configuration.apiKeys["{{keyParamName}}"]) {
-            {{#useHttpClient}}headers = {{/useHttpClient}}headers.set('{{keyParamName}}', this.configuration.apiKeys["{{keyParamName}}"]);
+        if (this.configuration.apiKeys['{{keyParamName}}']) {
+            {{#useHttpClient}}headers = {{/useHttpClient}}headers.set('{{keyParamName}}', this.configuration.apiKeys['{{keyParamName}}']);
         }
 
 {{/isKeyInHeader}}
 {{#isKeyInQuery}}
-        if (this.configuration.apiKeys["{{keyParamName}}"]) {
-            {{#useHttpClient}}queryParameters = {{/useHttpClient}}queryParameters.set('{{keyParamName}}', this.configuration.apiKeys["{{keyParamName}}"]);
+        if (this.configuration.apiKeys['{{keyParamName}}']) {
+            {{#useHttpClient}}queryParameters = {{/useHttpClient}}queryParameters.set('{{keyParamName}}', this.configuration.apiKeys['{{keyParamName}}']);
         }
 
 {{/isKeyInQuery}}
@@ -199,7 +204,7 @@ export class {{classname}} {
 {{/isBasic}}
 {{#isOAuth}}
         if (this.configuration.accessToken) {
-            let accessToken = typeof this.configuration.accessToken === 'function'
+            const accessToken = typeof this.configuration.accessToken === 'function'
                 ? this.configuration.accessToken()
                 : this.configuration.accessToken;
             {{#useHttpClient}}headers = {{/useHttpClient}}headers.set('Authorization', 'Bearer ' + accessToken);
@@ -208,35 +213,35 @@ export class {{classname}} {
 {{/isOAuth}}
 {{/authMethods}}
         // to determine the Accept header
-        let httpHeaderAccepts: string[] = [
+        const httpHeaderAccepts: string[] = [
             {{#produces}}
             '{{{mediaType}}}'{{#hasMore}},{{/hasMore}}
             {{/produces}}
         ];
-        let httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        if (httpHeaderAcceptSelected != undefined) {
+        const httpHeaderAcceptSelected: string | undefined = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (httpHeaderAcceptSelected !== undefined) {
 {{^useHttpClient}}
-            headers.set("Accept", httpHeaderAcceptSelected);
+            headers.set('Accept', httpHeaderAcceptSelected);
 {{/useHttpClient}}
 {{#useHttpClient}}
-            headers = headers.set("Accept", httpHeaderAcceptSelected);
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
 {{/useHttpClient}}
         }
 
         // to determine the Content-Type header
-        let consumes: string[] = [
+        const consumes: string[] = [
             {{#consumes}}
             '{{{mediaType}}}'{{#hasMore}},{{/hasMore}}
             {{/consumes}}
         ];
 {{#bodyParam}}
-        let httpContentTypeSelected:string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected != undefined) {
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
 {{^useHttpClient}}
             headers.set('Content-Type', httpContentTypeSelected);
 {{/useHttpClient}}
 {{#useHttpClient}}
-            headers = headers.set("Content-Type", httpContentTypeSelected);
+            headers = headers.set('Content-Type', httpContentTypeSelected);
 {{/useHttpClient}}
         }
 {{/bodyParam}}
@@ -298,7 +303,7 @@ export class {{classname}} {
                 params: queryParameters,
 {{/hasQueryParams}}
 {{#isResponseFile}}
-                responseType: "blob",
+                responseType: 'blob',
 {{/isResponseFile}}
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,

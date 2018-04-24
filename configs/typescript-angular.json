@@ -1,0 +1,107 @@
+{
+  "defaults": {
+    "language": "typescript",
+    "classPrefix": "",
+    "gitUserId": "",
+    "gitRepoId": "",
+    "releaseNote": "Initial commit",
+    "useHttpClient": true,
+    "httpMethodCase": "original",
+    "injectionToken": "InjectionToken",
+    "injectionTokenTyped": true,
+
+    "sortParamsByRequiredFlag": true,
+    "ensureUniqueParams": true,
+    "allowUnicodeIdentifiers": false,
+    "modelPropertyNaming": "camelCase",
+    "modelNaming": "PascalCase",
+    "supportsES6": true,
+    "npmName": "shield-md",
+    "npmVersion": "0.0.1",
+    "npmRepository": "",
+    "snapshot": false,
+    "withInterfaces": false,
+    "ngVersion": "5.2.0"
+  },
+  "directories": [
+    "api",
+    "model"
+  ],
+  "partials": {
+    "licenseInfo": "licenseInfo.mustache",
+    "apiInterface": "apiInterface.mustache",
+    "modelAlias": "modelAlias.mustache",
+    "modelEnum": "modelEnum.mustache",
+    "modelGeneric": "modelGeneric.mustache",
+    "modelGenericAdditionalProperties": "modelGenericAdditionalProperties.mustache",
+    "modelGenericEnums": "modelGenericEnums.mustache",
+    "modelTaggedUnion": "modelTaggedUnion.mustache",
+    "rxjs-operators": "rxjs-operators.mustache"
+  },
+  "transformations": [
+    {
+      "input": "models.mustache",
+      "output": "model/models.ts"
+    },
+    {
+      "input": "apis.mustache",
+      "output": "api/api.ts"
+    },
+    {
+      "input": "index.mustache",
+      "output": "index.ts"
+    },
+    {
+      "input": "api.module.mustache",
+      "output": "api.module.ts"
+    },
+    {
+      "input": "configuration.mustache",
+      "output": "configuration.ts"
+    },
+    {
+      "input": "variables.mustache",
+      "output": "variables.ts"
+    },
+    {
+      "input": "encoder.mustache",
+      "output": "encoder.ts"
+    },
+    {
+      "input": "gitignore",
+      "output": ".gitignore"
+    },
+    {
+      "input": "git_push.sh.mustache",
+      "output": "git_push.sh"
+    },
+    {
+      "input": "README.mustache",
+      "output": "README.md"
+    },
+    {
+      "input": "package.mustache",
+      "output": "package.json"
+    },
+    {
+      "input": "tsconfig.mustache",
+      "output": "tsconfig.json"
+    },
+    {
+      "input": "tsconfig.mustache",
+      "output": "tsconfig.json"
+    }
+  ],
+  "perApi": [
+    {
+      "input": "api.service.mustache",
+      "output": "api/{{name}}.service.ts"
+    }
+  ],
+  "perModel": [
+    {
+      "input": "model.mustache",
+      "output": "model/{{#models}}{{#model}}{{name}}{{/model}}{{/models}}.ts"
+    }
+  ]
+}
