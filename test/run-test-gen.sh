@@ -7,3 +7,7 @@ node ../cg.js \
   --output generated \
   ../configs/typescript-angular \
   petstore3.json
+
+rm -r samples/typescript-angular-v5/npm/**
+mv -f generated/typescript-angular/** samples/typescript-angular-v5/npm/
+mv -f generated/typescript-angular/.??** samples/typescript-angular-v5/npm/
