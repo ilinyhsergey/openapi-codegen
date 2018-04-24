@@ -6,7 +6,7 @@ export interface {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{
      * {{{description}}}
      */
     {{/description}}
-    {{#isReadOnly}}readonly {{/isReadOnly}}{{name}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{datatype}}}{{/isEnum}};
+    {{#isReadOnly}}readonly {{/isReadOnly}}{{name}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{#isDate}}Date{{/isDate}}{{^isDate}}{{#isDateTime}}Date{{/isDateTime}}{{^isDateTime}}{{{datatype}}}{{/isDateTime}}{{/isDate}}{{/isEnum}};
 {{/vars}}
 }
 {{>modelGenericEnums}}

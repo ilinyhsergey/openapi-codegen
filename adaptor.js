@@ -868,6 +868,9 @@ function transform(api, defaults, callback) {
                 entry.description = schema.description||'';
                 entry.unescapedDescription = entry.description;
                 entry.type = schema.type;
+                entry.format = schema.format;
+                entry.isDate = (schema.type === 'string') && (schema.format === 'date');
+                entry.isDateTime = (schema.type === 'string') && (schema.format === 'date-time');
                 entry.required = (parent.required && parent.required.indexOf(entry.name)>=0)||false;
                 entry.isNotRequired = !entry.required;
                 entry.readOnly = !!schema.readOnly;
