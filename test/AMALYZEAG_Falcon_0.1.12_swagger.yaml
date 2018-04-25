@@ -1,0 +1,3148 @@
+openapi: 3.0.0
+servers:
+  - url: https://api.amalyze.com/0.1.11/
+info:
+  description: |
+    AMALYZE API
+  version: "0.1.12"
+  title: AMALYZE API
+tags:
+  - name: advertising.campaigns
+  - name: advertising.campaign.spa
+  - name: research.products
+  - name: research.keywords
+  - name: system.user
+  - name: generic
+
+
+
+
+paths:
+
+  #####################################
+  /advertising.campaigns.get:
+    post:
+      description: |
+        Returns all campaigns for account, which are managed by amalyze
+      tags:
+        - advertising.campaigns
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'pagination':
+                  $ref: '#/components/schemas/PaginationRequest'
+                'sorting':
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      'direction':
+                        $ref: '#/components/schemas/SortingDirection'
+                      'column':
+                        type: string
+                        example: amazon.name
+                        enum: [
+                            'amazon.name', 'amazon.start', 'amazon.end', 'amazon.type',
+                            'amazon.targeting', 'amazon.asin', 'amazon.status',
+                            'amalyze.progress'
+                        ]
+
+                'filters':
+                  type: object
+                  properties:
+                    'asin':
+                      $ref: '#/components/schemas/Asin'
+                    'merchant':
+                      $ref: '#/components/schemas/MerchantId'
+                    'marketplace':
+                      $ref: '#/components/schemas/MarketplaceId'
+                    'campaign.name':
+                      $ref: '#/components/schemas/CampaignName'
+                    'camaign.type':
+                      $ref: '#/components/schemas/CampaignType'
+                    'amalyze.generic':
+                      $ref: '#/components/schemas/AmalyzeGeneric'
+                    'amalyze.progress':
+                      $ref: '#/components/schemas/CampaignProgress'
+        description: optional filters
+      responses:
+        '200':
+          description: >
+            retreives all campaigns managed by AMALYZE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'pagination':
+                    $ref: '#/components/schemas/PaginationResponse'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+                  'items':
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        'amalyze':
+                          type: object
+                          properties:
+                            'progress':
+                              $ref: '#/components/schemas/CampaignProgress'
+                            'targeting':
+                              $ref: '#/components/schemas/CampaignTargetingType'
+                            'optimization':
+                              $ref: '#/components/schemas/CampaignOptimizationType'
+                            'keywords':
+                              type: number
+                              description: number of keywords within campaign
+                              example: 112233
+                            'optimizations':
+                              type: number
+                              description: number of optimizations performed on campaign
+                              example: 123456
+                        'amazon':
+                          type: object
+                          properties:
+                            'name':
+                              $ref: '#/components/schemas/CampaignName'
+                            'status':
+                              $ref: '#/components/schemas/CampaignStatus'
+                            'merchant':
+                              $ref: '#/components/schemas/Merchant'
+                            'marketplace':
+                              $ref: '#/components/schemas/Marketplace'
+                            'type':
+                              $ref: '#/components/schemas/CampaignType'
+                            'asin':
+                              $ref: '#/components/schemas/Asin'
+                            'skus':
+                              type: number
+                              description: number of SKUs within the campaign
+                              example: 3
+                            'start':
+                              $ref: '#/components/schemas/CampaignStart'
+                            'end':
+                              $ref: '#/components/schemas/CampaignEnd'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+
+  #####################################
+  /advertising.campaign.create:
+    post:
+      description: |
+        Creates a new campaign, which should be managed by amalyze
+      tags:
+        - advertising.campaigns
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'campaign':
+                  $ref: '#/components/schemas/Campaign'
+                'targeting':
+                  $ref: '#/components/schemas/CampaignTargeting'
+                'optimization':
+                  $ref: '#/components/schemas/CampaignOptimization'
+      responses:
+        '200':
+          description: >
+            creates campaign
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request:
+                    $ref: '#/components/schemas/Request'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+  #####################################
+  /advertising.campaign.spa.targeting.competitors.suggests.get:
+    post:
+      description: |
+        Returns targeting data for suggested competitor products
+      tags:
+        - advertising.campaign.spa
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'asin':
+                  $ref: '#/components/schemas/Asin'
+                'marketplace':
+                  $ref: '#/components/schemas/MarketplaceId'
+                'pagination':
+                  $ref: '#/components/schemas/PaginationRequest'
+                'sorting':
+                  type: object
+                  properties:
+                    'directon':
+                      $ref: '#/components/schemas/SortingDirection'
+                    'column':
+                      type: string
+                      example: 'title'
+                      enum: ['title', 'brand.name', 'category.name']
+
+      responses:
+        '200':
+          description: >
+            retreives competitor suggests for specific ASIN
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'pagination':
+                    $ref: '#/components/schemas/PaginationResponse'
+                  'items':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AdvertisingTargetingCompetitors'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+
+
+  #####################################
+  /advertising.campaign.spa.targeting.keywords.suggests.get:
+    post:
+      description: |
+        Returns keywords suggestions for targeting use
+      tags:
+        - advertising.campaign.spa
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'sorting':
+                  type: object
+                  properties:
+                    'direction':
+                      $ref: '#/components/schemas/SortingDirection'
+                    'column':
+                      type: string
+                      enum: ['relevancy']
+                'pagination':
+                  $ref: '#/components/schemas/PaginationRequest'
+                'asin':
+                  $ref: '#/components/schemas/Asin'
+                'marketplace':
+                  $ref: '#/components/schemas/MarketplaceId'
+                'precision':
+                  description: |
+                    the precision:1 (max precision, less results), 3 (less precision more results)
+                  type: number
+                  enum: [1,2,3]
+
+      responses:
+        '200':
+          description: >
+            retreives keywords of matching ASINs for specifc keyword
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'items':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AdvertisingTargetingKeywords'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+                  'pagination':
+                    $ref: '#/components/schemas/PaginationResponse'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+  #####################################
+  /advertising.campaign.spa.optimization.genius.calculation.get:
+    post:
+      description: |
+        Returns the suggested and user defined calculation for a specific ASIN
+          to be used for GENIUS optimization
+      tags:
+        - advertising.campaign.spa
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'asin':
+                  $ref: '#/components/schemas/Asin'
+                'marketplace':
+                  $ref: '#/components/schemas/MarketplaceId'
+      responses:
+        '200':
+          description: >
+            returns calculation for genius optimization
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'calculation':
+                    type: object
+                    properties:
+                      'default':
+                        type: object
+                        properties:
+                          'price':
+                            $ref: '#/components/schemas/AmountCurrency'
+                          'fees':
+                            $ref: '#/components/schemas/CalculationFees'
+                          'tax':
+                            $ref: '#/components/schemas/AmountCurrencyRate'
+                      'custom':
+
+                        type: object
+                        properties:
+                          'price':
+                            $ref: '#/components/schemas/AmountCurrency'
+                          'fees':
+                            $ref: '#/components/schemas/CalculationFees'
+                          'tax':
+                            $ref: '#/components/schemas/AmountCurrencyRate'
+                          'buying':
+                            $ref: '#/components/schemas/AmountCurrency'
+                          'other':
+                            $ref: '#/components/schemas/AmountCurrency'
+                          'cr':
+                            $ref: '#/components/schemas/Cr'
+                          'bid':
+                            $ref: '#/components/schemas/Bid'
+
+                  'request':
+                    $ref: '#/components/schemas/Request'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+  #####################################
+  /generic.asin.check:
+    post:
+      tags:
+        - generic
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      description: |
+        Checks wheter the ASIN exists in AMALYZE's database or marketplace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'asins':
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AsinMarketplaceId'
+      responses:
+        '200':
+          description: >
+            validates an ASIN against the corresponding amazon marketplace
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'items':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AsinCheck'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+  #####################################
+  /generic.sku.check:
+    post:
+      description: |
+        checks whetere the SKU exists
+      tags:
+        - generic
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'skus':
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AsinMarketplaceIdSku'
+      responses:
+        '200':
+          description: >
+            validates an SKU
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'items':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SkuCheck'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+  #####################################
+#  /research.keywords.get:
+#    post:
+#      description: |
+#        Searches for keywords (base on filters) and returns general information about them
+#      tags:
+#        - research.keywords
+#      requestBody:
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              properties:
+#                'sorting':
+#                  type: array
+#                  items:
+#                    type: object
+#                    properties:
+#                      'direction':
+#                        $ref: '#/components/schemas/SortingDirection'
+#                      'column':
+#                        example: 'amazon.title'
+#                        type: string
+#                        enum: ['amazon.title']
+#                'pagination':
+#                  $ref: '#/components/schemas/PaginationRequest'
+#      responses:
+#        '200':
+#          description: >
+#            returns products based on filters
+#          content:
+#            application/json:
+#              schema:
+#                type: object
+#                properties:
+#                  'pagination':
+#                    $ref: '#/components/schemas/PaginationResponse'
+#                  'items':
+#                    type: array
+#                    items:
+#                      $ref: '#/components/schemas/Product'
+#                  'request':
+#                    $ref: '#/components/schemas/Request'
+#        '401':
+#          $ref: '#/components/responses/401'
+#        '403':
+#          $ref: '#/components/responses/403'
+#        '404':
+#          $ref: '#/components/responses/404'
+#        '429':
+#          $ref: '#/components/responses/429'
+#        '500':
+#          $ref: '#/components/responses/500'
+
+
+  #####################################
+  /research.keywords.search:
+    post:
+      description: |
+        searches for keywords matching the filters
+      tags:
+        - research.keywords
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'sorting':
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      'direction':
+                        $ref: '#/components/schemas/SortingDirection'
+                      'column':
+                        example: 'amazon.title'
+                        type: string
+                        enum: [
+                          'score',
+                          'keyword.keyword',
+                          'brands',
+                          'buybox,merchants', 'buybox.rate', 'buybox.stroke.rate', 'buybox.offer.amount',
+                          'results.advertising.spa.count', 'results.organic.count',
+                          'categories.count', 'categories.main.name',
+                          'fiters.prime.rate', 'filters.subscription.rate',
+                          'reviews.total',
+                          'rating.score',
+                          'update.last'
+                        ]
+                'pagination':
+                  $ref: '#/components/schemas/PaginationRequest'
+                'filters':
+                  type: object
+                  properties:
+                    'amalyze.generic':
+                      $ref: '#/components/schemas/AmalyzeGeneric'
+                    'marketplaces':
+                      $ref: '#/components/schemas/MarketplacesId'
+
+      responses:
+        '200':
+          description: >
+            returns keywords matching the filter criterias
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'items':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/KeywordsSearchResult'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+                  'pagination':
+                    $ref: '#/components/schemas/PaginationResponse'
+
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+  #####################################
+  /research.keyword.general.get:
+    post:
+      description: |
+        returns general information for specific keywords
+      tags:
+        - research.keywords
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keywords:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/KeywordMarketplace'
+      responses:
+        '200':
+          description: >
+            returns general information about keywords
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'items':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/KeywordGeneral'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+
+  #####################################
+  /research.products.search:
+    post:
+      description: |
+        Searches for ASINs (based on filters) and returns general information about them
+      tags:
+        - research.products
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'sorting':
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      'direction':
+                        $ref: '#/components/schemas/SortingDirection'
+                      'column':
+                        example: 'amazon.title'
+                        type: string
+                        enum: ['amazon.title', 'score']
+                'pagination':
+                  $ref: '#/components/schemas/PaginationRequest'
+                'filters':
+                  type: object
+                  properties:
+                    'amalyze.generic':
+                      $ref: '#/components/schemas/AmalyzeGeneric'
+                    'asins':
+                      $ref: '#/components/schemas/Asins'
+                    'upcs':
+                      $ref: '#/components/schemas/Upcs'
+                    'title':
+                      $ref: '#/components/schemas/ProductTitle'
+                    'brands':
+                      $ref: '#/components/schemas/ProductBrandsName'
+                    'merchants':
+                      $ref: '#/components/schemas/MerchantsName'
+                    'available':
+                      $ref: '#/components/schemas/ProductAvailable'
+                    'marketplaces':
+                      $ref: '#/components/schemas/MarketplacesId'
+                    'categories':
+                      $ref: '#/components/schemas/CategoriesId'
+                    'prime':
+                      $ref: '#/components/schemas/ProductPrime'
+                    'advertising.spa':
+                      $ref: '#/components/schemas/ProductAdvertisingSpa'
+                    'buybox':
+                      $ref: '#/components/schemas/ProductBuyboxBoolean'
+                    'type':
+                      $ref: '#/components/schemas/ProductTypes'
+                    'competitors':
+                      $ref: '#/components/schemas/CompetitorsRange'
+                    'competitors.prime':
+                      $ref: '#/components/schemas/CompetitorsPrimeRange'
+                    'bsr':
+                      $ref: '#/components/schemas/BsrRange'
+                    'price':
+                      $ref: '#/components/schemas/PriceRange'
+                    'optimization':
+                      $ref: '#/components/schemas/OptimizationRange'
+                    'rating':
+                      $ref: '#/components/schemas/RatingRange'
+                    'reviews':
+                      $ref: '#/components/schemas/ReviewsRange'
+
+      responses:
+        '200':
+          description: >
+            returns products based on filters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'pagination':
+                    $ref: '#/components/schemas/PaginationResponse'
+                  'items':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+  #####################################
+  /research.product.general.get:
+    post:
+      description: |
+        Returns general informations on specific ASINs
+      tags:
+        - research.products
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'asins':
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AsinMarketplaceId'
+
+
+      responses:
+        '200':
+          description: >
+            returns products based on filters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'items':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+  #####################################
+  /research.product.keywords.get:
+    post:
+      description: |
+        Returns keywords for a specific ASIN / Marketplace
+      tags:
+        - research.products
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'sorting':
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      'direction':
+                        $ref: '#/components/schemas/SortingDirection'
+                      'column':
+                        example: 'score'
+                        type: string
+                        enum: ['score','keyword','position.old','position.new','change']
+                'pagination':
+                  $ref: '#/components/schemas/PaginationRequest'
+                'filters':
+                  type: object
+                  properties:
+                    'asin':
+                      $ref: '#/components/schemas/Asin'
+                    'marketplace':
+                      $ref: '#/components/schemas/Marketplace'
+                    'keyword.exact':
+                      $ref: '#/components/schemas/KeywordExact'
+                    'keyword.query':
+                      $ref: '#/components/schemas/KeywordPhrase'
+                    'position.old':
+                      $ref: '#/components/schemas/KeywordPositionRange'
+                    'position.new':
+                      $ref: '#/components/schemas/KeywordPositionRange'
+                    'types':
+                      $ref: '#/components/schemas/KeywordChangeTypes'
+
+
+      responses:
+        '200':
+          description: >
+            returns products based on filters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'items':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductKeyword'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+  #####################################
+  /research.keyword.rankings.get:
+    post:
+      tags:
+        - research.keywords
+
+      parameters:
+        - $ref: '#/components/parameters/x-falcon-token'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                'pagination':
+                  $ref: '#/components/schemas/PaginationRequest'
+                'keyword':
+                  $ref: '#/components/schemas/KeywordKeyword'
+                'marketplace':
+                  $ref: '#/components/schemas/MarketplaceId'
+
+      responses:
+        '200':
+          description: >
+            returns products based on filters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  'pagination':
+                    $ref: '#/components/schemas/PaginationResponse'
+                  'items':
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  'request':
+                    $ref: '#/components/schemas/Request'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+  #####################################
+  /system.user.login:
+    post:
+      tags:
+        - system.user
+
+      description: >-
+        Validates credentials and - if successfull - returns the api token for
+        further requests. This is the only method, which does not require the
+        FALCON token.
+      responses:
+        '200':
+          description: >
+            user has been successfully loggedin
+
+            The session ID is returned in a cookie named "XSRF-TOKEN"
+          headers:
+            X-FALCON-TOKEN:
+              description: Token for the Falcon API
+              schema:
+                type: string
+            X-XSRF-TOKEN:
+              description: Sessionmanagment for angularjs
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request:
+                    $ref: '#/components/schemas/Request'
+                  user:
+                    $ref: '#/components/schemas/SystemUser'
+                  navigation:
+                    $ref: '#/components/schemas/SystemNavigation'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+        description: The user to create.
+
+  #####################################
+  /system.user.recover:
+    post:
+      tags:
+        - system.user
+      description: |
+        Validates email address and sends user an email containing a password recovery link
+      responses:
+        '200':
+          description: >
+            password recovery successfull. That does not mean, that the email is associated to an existing account and an mail containing the recovery link has been sent. It just indicates, that, if there is an existing account associated, an email has been sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request:
+                    $ref: '#/components/schemas/Request'
+                  user:
+                    $ref: '#/components/schemas/SystemUser'
+                  navigation:
+                    $ref: '#/components/schemas/SystemNavigation'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recovery'
+        description: The user to create.
+
+  #####################################
+  /system.user.status:
+    post:
+      tags:
+        - system.user
+      parameters:
+        - $ref: '#/components/parameters/x-xsrf-token'
+        - $ref: '#/components/parameters/x-falcon-token'
+      description: |
+        Returns the user's status
+      responses:
+        '200':
+          description: >
+            user is authenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request:
+                    $ref: '#/components/schemas/Request'
+                  user:
+                    $ref: '#/components/schemas/SystemUser'
+                  navigation:
+                    $ref: '#/components/schemas/SystemNavigation'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+  #####################################
+  /system.user.logout:
+    post:
+      tags:
+        - system.user
+      parameters:
+        - $ref: '#/components/parameters/x-xsrf-token'
+        - $ref: '#/components/parameters/x-falcon-token'
+      description: >-
+        Destroys the user's session and marks the user as loggout
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+components:
+  schemas:
+
+    #####################################
+    'AdvertisingTargetingCompetitors':
+      type: object
+      properties:
+        'amazon':
+          type: object
+          properties:
+            'asin':
+              $ref: '#/components/schemas/Asin'
+            'marketplace':
+              $ref: '#/components/schemas/Marketplace'
+            'title':
+              $ref: '#/components/schemas/ProductTitle'
+            'brand':
+              $ref: '#/components/schemas/ProductBrand'
+            'category':
+              $ref: '#/components/schemas/Category'
+        'amalyze':
+          type: object
+          properties:
+            'keywords':
+              $ref: '#/components/schemas/KeywordsCount'
+        'success':
+          $ref: '#/components/schemas/AsinMarketplaceSuccess'
+        'error':
+          $ref: '#/components/schemas/Error'
+
+    #####################################
+    'AdvertisingTargetingKeywords':
+      type: object
+      properties:
+        'marketplace':
+          $ref: '#/components/schemas/Marketplace'
+        'keyword':
+          $ref: '#/components/schemas/Keyword'
+        'relevancy':
+          $ref: '#/components/schemas/KeywordRelevancy'
+
+
+    #####################################
+    'AmalyzeGeneric':
+      type: string
+      description: performs a full-text search within all available fields
+      example: B1234567
+
+    #####################################
+    'Amount':
+      type: number
+      example: 1.23
+
+    #####################################
+    'AmountCurrency':
+      type: object
+      properties:
+        'amount':
+          $ref: '#/components/schemas/Amount'
+        'currency':
+          $ref: '#/components/schemas/Currency'
+
+
+
+    #####################################
+    'AmountCurrencyRate':
+      type: object
+      properties:
+        'amount':
+          $ref: '#/components/schemas/Amount'
+        'currency':
+          $ref: '#/components/schemas/Currency'
+        'rate':
+          $ref: '#/components/schemas/Rate'
+
+
+
+    #####################################
+    'Asin':
+      type: string
+      example: B1234567
+
+    #####################################
+    'Asins':
+      type: array
+      items:
+        $ref: '#/components/schemas/Asin'
+
+    #####################################
+    'AsinMarketplaceId':
+      type: object
+      properties:
+        'asin':
+          $ref: '#/components/schemas/Asin'
+        'marketplace':
+          $ref: '#/components/schemas/MarketplaceId'
+
+    #####################################
+    'AsinMarketplaceIdSku':
+      type: object
+      properties:
+        'asin':
+          $ref: '#/components/schemas/Asin'
+        'marketplace':
+          $ref: '#/components/schemas/MarketplaceId'
+        'sku':
+          $ref: '#/components/schemas/Sku'
+
+
+    #####################################
+    'AsinMarketplaceSuccess':
+          type: boolean
+          example: true
+          description: indicates whether the asin is existing on the marketplace
+
+    #####################################
+    'AsinMarketplaceMonitoring':
+          type: boolean
+          example: true
+          description: indicates wheter the asin exists already in the AMALYZE monitoring
+
+
+
+    #####################################
+    'AsinCheck':
+      type: object
+      properties:
+        'asin':
+          $ref: '#/components/schemas/Asin'
+        'marketplace':
+          $ref: '#/components/schemas/MarketplaceId'
+        'success':
+          $ref: '#/components/schemas/AsinMarketplaceSuccess'
+        'monitoring':
+          $ref: '#/components/schemas/AsinMarketplaceMonitoring'
+        'error':
+          $ref: '#/components/schemas/Error'
+
+    #####################################
+    'Bid':
+      type: object
+      properties:
+        'min':
+          $ref: '#/components/schemas/Amount'
+
+    #####################################
+    'BsrRange':
+      type: object
+      description: the BSR range
+      properties:
+        'min':
+          $ref: '#/components/schemas/BsrRangeMin'
+        'max':
+          $ref: '#/components/schemas/BsrRangeMax'
+
+    #####################################
+    'BsrRangeMin':
+      type: integer
+      example: 1
+      description: "the minimum bsr for the products (min: 1)"
+
+
+    #####################################
+    'BsrRangeMax':
+      type: integer
+      example: 1
+      description: "the maximum bsr for the products (max: 999999)"
+
+    #####################################
+    'CalculationFees':
+      type: object
+      properties:
+        'referral':
+          $ref: '#/components/schemas/AmountCurrencyRate'
+        'variable':
+          $ref: '#/components/schemas/AmountCurrency'
+        'peritem':
+          $ref: '#/components/schemas/AmountCurrency'
+        'fba':
+          $ref: '#/components/schemas/AmountCurrency'
+        'total':
+          $ref: '#/components/schemas/AmountCurrency'
+
+
+
+
+
+    #####################################
+    'Campaign':
+      type: object
+      properties:
+        'type':
+          $ref: '#/components/schemas/CampaignType'
+        'name':
+          $ref: '#/components/schemas/CampaignName'
+        'merchant':
+          $ref: '#/components/schemas/MerchantId'
+        'marketplace':
+          $ref: '#/components/schemas/MarketplaceId'
+        'asin':
+          $ref: '#/components/schemas/Asin'
+        'skus':
+          $ref: '#/components/schemas/Skus'
+        'start':
+          $ref: '#/components/schemas/CampaignStart'
+        'end':
+          $ref: '#/components/schemas/CampaignEnd'
+        'budget':
+          $ref: '#/components/schemas/CampaignBudget'
+
+    #####################################
+    'CampaignBudget':
+      type: number
+      description: Campaign's daily budget
+      example: 12.34
+
+    #####################################
+    'CampaignEnd':
+      type: string
+      description: Campaign's end date (YYYY-MM-DD)
+      example: "2018-01-01"
+
+    #####################################
+    'CampaignName':
+      type: string
+      description: Campaign's name
+
+
+    #####################################
+    'CampaignOptimizationType':
+      type: string
+      description: The optimization type
+      enum: [genius, rulebased]
+
+
+    #####################################
+    'CampaignOptimization':
+      type: object
+      description: Campaign's optimization
+      properties:
+        'type':
+          $ref: '#/components/schemas/CampaignOptimizationType'
+        'calculation':
+          type: object
+          properties:
+            'price':
+              type: object
+              properties:
+                'amount':
+                  $ref: '#/components/schemas/Amount'
+            'fees':
+              type: object
+              properties:
+                'variable':
+                  type: object
+                  properties:
+                    'amount':
+                      $ref: '#/components/schemas/Amount'
+                'referral':
+                  type: object
+                  properties:
+                    'rate':
+                      $ref: '#/components/schemas/Rate'
+                'peritem':
+                  type: object
+                  properties:
+                    'amount':
+                      $ref: '#/components/schemas/Amount'
+                'fba':
+                  type: object
+                  properties:
+                    'amount':
+                      $ref: '#/components/schemas/Amount'
+                'increased.fba':
+                  type: object
+                  properties:
+                    'amount':
+                      $ref: '#/components/schemas/Amount'
+            'tax':
+              type: object
+              properties:
+                'rate':
+                  $ref: '#/components/schemas/Rate'
+            'buying':
+              type: object
+              properties:
+                'amount':
+                  $ref: '#/components/schemas/Amount'
+            'other':
+              type: object
+              properties:
+                'amount':
+                  $ref: '#/components/schemas/Amount'
+            'cr':
+              $ref: '#/components/schemas/Rate'
+            'bid':
+              $ref: '#/components/schemas/Bid'
+
+    #####################################
+    'CampaignProgress':
+      type: string
+      description: The processing state
+      enum: [PROCESSED, NEW, ERROR, PROCESSING]
+
+
+
+    #####################################
+    'CampaignStart':
+      type: string
+      description: "Campaign's start date (YYYY-MM-DD)"
+      example: "2018-01-01"
+
+    #####################################
+    'CampaignStatus':
+      type: string
+      description: Campaign's state
+      enum: [ACTIVE, PAUSED, ARCHIVED]
+
+    #####################################
+    'CampaignTargeting':
+      type: object
+      properties:
+        'type':
+          $ref: '#/components/schemas/CampaignTargetingType'
+        'items':
+          $ref: '#/components/schemas/CampaignTargetingItems'
+
+    #####################################
+    'CampaignTargetingItems':
+      type: array
+      description: array of competitor asins or keywords
+      items:
+        type: string
+        example: "garlic press"
+
+
+    #####################################
+    'CampaignTargetingType':
+      type: string
+      description: The targeting type
+      enum: [keywords, competitors]
+
+    #####################################
+    'CampaignType':
+      type: string
+      description: The processing state
+      enum: [SPA, PDA, HSA]
+
+
+
+
+
+    #####################################
+    'Captcha':
+      type: string
+      description: >-
+        The user response token provided by reCAPTCHA, verifying the user on your site.
+
+        https://developers.google.com/recaptcha/docs/verify
+      example: 900150983cd24fb0d6963f7d28e17f72
+
+
+
+    #####################################
+    'Category':
+      type: object
+      properties:
+        'id':
+          $ref: '#/components/schemas/CategoryId'
+        'name':
+          $ref: '#/components/schemas/CategoryName'
+        'bsr':
+          $ref: '#/components/schemas/CategoryBsr'
+
+    #####################################
+    'Categories':
+      type: array
+      items:
+        type: array
+        items:
+          $ref: '#/components/schemas/Category'
+
+
+    #####################################
+    'CategoryBsr':
+      type: number
+      example: 1.234
+      description: The products BSR within the category
+
+
+    #####################################
+    'CategoriesId':
+      type: array
+      items:
+        $ref: '#/components/schemas/CategoryId'
+
+    #####################################
+    'CategoryId':
+      type: number
+      example: 12345
+      description: the category's ID
+
+    #####################################
+    'CategoryName':
+      type: string
+      example: Grocery
+      description: the category's Name
+
+
+
+
+
+    #####################################
+    'Cr':
+      type: number
+      example: 0.12
+      description: the conversion rate
+
+    #####################################
+    'CompetitorsRange':
+      type: object
+      description: the range of competitors offering products
+      properties:
+        'min':
+          $ref: '#/components/schemas/CompetitorsRangeMin'
+        'max':
+          $ref: '#/components/schemas/CompetitorsRangeMax'
+
+    #####################################
+    'CompetitorsPrimeRange':
+      type: object
+      description: the range of competitors offering products via prime
+      properties:
+        'min':
+          $ref: '#/components/schemas/CompetitorsRangeMin'
+        'max':
+          $ref: '#/components/schemas/CompetitorsRangeMax'
+
+    #####################################
+    'CompetitorsRangeMin':
+      type: integer
+      example: 1
+      description: "the minimum number of competitors (min: 1)"
+
+    #####################################
+    'CompetitorsRangeMax':
+      type: integer
+      example: 1
+      description: "the maximum number of competitors (min: 999999)"
+
+
+
+
+
+    #####################################
+    'Credentials':
+      type: object
+      properties:
+        captcha:
+          $ref: '#/components/schemas/Captcha'
+        username:
+          $ref: '#/components/schemas/Username'
+        password_md5:
+          $ref: '#/components/schemas/PasswordMd5'
+
+    #####################################
+    'Currency':
+      type: string
+      example: EUR
+
+
+    #####################################
+    'Email':
+      description: The email address
+      type: string
+      example: jon.doe@example.com
+
+    #####################################
+    'Error':
+      type: object
+      properties:
+        code:
+          type: number
+          description: error code
+          example: 501301
+        message:
+          type: string
+          example: Payload error. See hint.
+          description: detailed information about an occured error
+        hint:
+          type: string
+          example: missing field X
+          description: additional informations (e.g. missing field names)
+
+
+    #####################################
+    'Keyword':
+      type: object
+      properties:
+        'id':
+          $ref: '#/components/schemas/KeywordId'
+        'keyword':
+          $ref: '#/components/schemas/KeywordKeyword'
+
+
+
+    #####################################
+    'KeywordBrands':
+      type: number
+      example: 123
+      description: The number of unique brands ranking under this keyword (within the TOP 100)
+
+    #####################################
+    'KeywordBuybox':
+      type: object
+      properties:
+        'merchants':
+          $ref: '#/components/schemas/KeywordBuyboxMerchants'
+        'rate':
+          $ref: '#/components/schemas/KeywordBuyboxRate'
+        'offer':
+          $ref: '#/components/schemas/KeywordBuyboxOffer'
+
+
+
+    #####################################
+    'KeywordBuyboxMerchants':
+      type: number
+      description: The number of unqiue merchants ranking for this keyword
+      example: 123
+
+
+    #####################################
+    'KeywordBuyboxOffer':
+      type: object
+      properties:
+        'amount':
+          $ref: '#/components/schemas/Amount'
+        'currency':
+          $ref: '#/components/schemas/Currency'
+        'max':
+          $ref: '#/components/schemas/Amount'
+        'min':
+          $ref: '#/components/schemas/Amount'
+        'stroke':
+          $ref: '#/components/schemas/KeywordBuyboxStroke'
+
+
+    #####################################
+    'KeywordBuyboxRate':
+      type: number
+      description: The rate of products, ranking for this keyword and having a buybox
+      example: 0.12
+
+    #####################################
+    'KeywordBuyboxStroke':
+      type: object
+      properties:
+        'rate':
+          type: number
+          description: The rate of product, ranking for this keyword and having a stroke price
+          example: 0.12
+
+
+
+
+    #####################################
+    'KeywordCategories':
+      type: array
+      items:
+        $ref: '#/components/schemas/KeywordCategory'
+
+
+    #####################################
+    'KeywordCategory':
+      type: object
+      properties:
+        'id':
+          $ref: '#/components/schemas/CategoryId'
+        'name':
+          $ref: '#/components/schemas/CategoryName'
+        'categories':
+          type: array
+          items:
+            type: object
+            properties:
+              'id':
+                $ref: '#/components/schemas/CategoryId'
+              'name':
+                $ref: '#/components/schemas/CategoryName'
+
+
+    #####################################
+    'KeywordCorrection':
+      type: object
+      properties:
+        'correction':
+          type: string
+          example: 'corrected keyword'
+          description: |
+            if a correction was made, the corrected keyword
+        'type':
+          type: string
+          enum: ["none", "suggest", "corrected"]
+          description: |
+            Indicates the type of correction
+            "none": no Correction has been made, the results are shown for the entered keyword.
+            "suggest": no Correction has beeen made, but amazon is suggesting to search for a different keyword; results are show for the entered keyword.
+            "correction": Correcation has been made; results are shown for the corrected keyword
+
+
+
+    ####################################
+    'KeywordsCountPos':
+      type: object
+      properties:
+        'organic':
+          type: object
+          properties:
+            'count':
+              $ref: '#/components/schemas/KeywordsCountType'
+            'pos':
+              $ref: '#/components/schemas/KeywordsPos'
+        'advertising':
+          type: object
+          properties:
+            'spa':
+              type: object
+              properties:
+                'count':
+                  $ref: '#/components/schemas/KeywordsCountType'
+                'pos':
+                  $ref: '#/components/schemas/KeywordsPos'
+
+    #####################################
+    'KeywordExact':
+      type: string
+      description: the exact keyword. Will only return keywords which match exact
+      example: "fatburner"
+
+
+    #####################################
+    'KeywordPhrase':
+      type: string
+      description: returns all keywords, containing the value
+      example: "fatburner"
+
+
+    #####################################
+    'KeywordPositionRange':
+      type: object
+      properties:
+        'min':
+          type: integer
+          description: the minimum ranking position for the keywords
+          example: 1
+        'max':
+          type: integer
+          description: the maximum ranking position for the keywords
+          example: 99
+
+    #####################################
+    'KeywordChangeTypes':
+      type: array
+      items:
+        $ref: '#/components/schemas/KeywordChangeType'
+
+    #####################################
+    'KeywordChangeType':
+      type: string
+      description: The change type
+      enum: [up, down, new, lost, equal]
+      example: up
+
+
+
+    #####################################
+    'KeywordFilters':
+      type: array
+      items:
+        type: object
+        properties:
+          'name':
+            $ref: '#/components/schemas/KeywordFiltersName'
+          'values':
+            type: array
+            items:
+              type: object
+              properties:
+                'name':
+                  $ref: '#/components/schemas/KeywordFiltersValuesName'
+
+    #####################################
+    'KeywordFiltersName':
+      type: string
+      description: |
+        the name of the filter
+      example: "Subscript & Save"
+
+    #####################################
+    'KeywordFiltersValuesName':
+      type: string
+      description: |
+        the name of the filters value
+      example: "Prime available"
+
+
+    #####################################
+    'KeywordGeneral':
+      type: object
+      properties:
+        'keyword':
+          $ref: '#/components/schemas/Keyword'
+        'marketplace':
+          $ref: '#/components/schemas/Marketplace'
+        'results':
+          $ref: '#/components/schemas/KeywordResults'
+        'categories':
+          $ref: '#/components/schemas/KeywordCategories'
+        'correction':
+          $ref: '#/components/schemas/KeywordCorrection'
+        'related':
+          $ref: '#/components/schemas/KeywordRelated'
+        'success':
+          $ref: '#/components/schemas/KeywordMarketplaceSuccess'
+        'error':
+          $ref: '#/components/schemas/Error'
+        'filters':
+          $ref: '#/components/schemas/KeywordFilters'
+
+    #####################################
+    'KeywordId':
+      type: string
+      example: "64475c5aae112156d5a227a0b855c345"
+      description: the keyword's id
+
+
+
+    #####################################
+    'KeywordKeyword':
+      type: string
+      example: fatburner
+      description: the keyword
+
+
+    #####################################
+    'KeywordRelevancy':
+      type: number
+      example: .98
+      description: the keyword's relevancy in relationship with the ASIN
+
+
+    #####################################
+    'KeywordsCountType':
+      type: number
+      example: 123
+      description: number of matching keywords
+
+    #####################################
+    'KeywordsSearchResult':
+      type: array
+      items:
+        type: object
+        properties:
+          'score':
+            $ref: '#/components/schemas/Score'
+          'keyword':
+            $ref: '#/components/schemas/Keyword'
+          'marketplace':
+            $ref: '#/components/schemas/Marketplace'
+          'brands':
+            $ref: '#/components/schemas/KeywordBrands'
+          'buybox':
+            $ref: '#/components/schemas/KeywordBuybox'
+          'results':
+            $ref: '#/components/schemas/KeywordResults'
+          'correction':
+            $ref: '#/components/schemas/KeywordCorrection'
+
+          'categories':
+            type: object
+            properties:
+              'total':
+                type: number
+                description: the number of unique categories the products ranking for this keywords are in
+                example: 1234
+              'root':
+                type: object
+                properties:
+                  'id':
+                    type: number
+                    description: the ID of the main category
+                    example: 1234556
+                  'name':
+                    type: string
+                    description: The main categorys name
+                    example: Baby
+          'filters':
+            type: object
+            properties:
+              'prime':
+                type: object
+                properties:
+                  'rate':
+                    type: number
+                    description: The rate of products, ranking for this keyword and having the prime badge
+                    example: 0.12345
+              'subscription':
+                type: object
+                properties:
+                  'rate':
+                    type: number
+                    description: the rate of products, ranking for this keyword and offering a "subscribe & save"
+                    example: 123
+              'plus':
+                type: object
+                properties:
+                  'rate':
+                    type: number
+                    description: the rate of products, ranking for this keyword and are offered as "plus" product
+              'pantry':
+                type: boolean
+                example: true
+                description: indicates, whether there are any pantry products ranking for this keyword
+              'int_shipping':
+                type: boolean
+                example: true
+                description: indicates, where there are any products ranking for this keyword and internationally shipped
+              'reviews':
+                type: object
+                properties:
+                  'total':
+                    type: number
+                    example: 95.123
+                    description: the average number of reviews for products, ranking for this keyword
+              'rating':
+                type: object
+                properties:
+                  'score':
+                    type: number
+                    example: 3.5
+                    description: the averate rating for products, ranking for this keyword
+              'optimization':
+                type: object
+                properties:
+                  'total':
+                    type: number
+                    example: 0.98
+                    description: the average optimization rate for products, ranking for this keyword
+
+
+
+
+
+
+
+    ####################################
+    'KeywordsCount':
+      type: object
+      properties:
+        'organic':
+          type: object
+          properties:
+            'count':
+              $ref: '#/components/schemas/KeywordsCountType'
+        'advertising':
+          type: object
+          properties:
+            'spa':
+              type: object
+              properties:
+                'count':
+                  $ref: '#/components/schemas/KeywordsCountType'
+
+    ####################################
+#    'KeywordsMarketplaces':
+#      type: array
+#      items:
+#        type: object
+#        properties:
+#          'keyword':
+#            $ref: '#/components/schemas/Keyword'
+#          'marketplace':
+#            $ref: '#/components/schemas/MarketplaceId'
+
+
+    ####################################
+    'KeywordsPos':
+      type: number
+      example: 123
+      description: Average position of product's keywords
+
+
+
+
+
+    #####################################
+    'KeywordMarketplaceSuccess':
+          type: boolean
+          example: true
+          description: indicates whether the keyword is monitored for the marketplace
+
+
+    #####################################
+    'KeywordMarketplace':
+      type: object
+      properties:
+        'keyword':
+          $ref: '#/components/schemas/KeywordKeyword'
+        'marketplace':
+          $ref: '#/components/schemas/MarketplaceId'
+
+    #####################################
+    'KeywordsRatio':
+      type: number
+      example: 0.12
+      description: the ratio of spa advertisments
+
+    #####################################
+    'KeywordRelated':
+      type: object
+      properties:
+        'exists':
+          type: boolean
+          example: true
+          description: indicates, if there are related keywordsexisting
+        'keywords':
+          type: array
+          items:
+            type: string
+            example: "keyword A"
+            description: the related keywords to search for
+
+
+
+    #####################################
+    'KeywordResults':
+      type: object
+      properties:
+        'organic':
+          type: object
+          properties:
+            'count':
+              $ref: '#/components/schemas/KeywordsCountType'
+        'advertising':
+          type: object
+          properties:
+            'spa':
+              type: object
+              properties:
+                'count':
+                  $ref: '#/components/schemas/KeywordsCountType'
+                'ratio':
+                  $ref: '#/components/schemas/KeywordsRatio'
+            'hsa':
+              type: boolean
+              example: true
+              description: indicates if the as a HSA for the keyword
+
+    #####################################
+    'Marketplace':
+      type: object
+      properties:
+        'id':
+          $ref: '#/components/schemas/MarketplaceId'
+        'name':
+          $ref: '#/components/schemas/MarketplaceName'
+
+    #####################################
+    'MarketplacesId':
+      type: array
+      items:
+        $ref: '#/components/schemas/MarketplaceId'
+        example: "A12345678"
+
+    #####################################
+    'MarketplaceId':
+      type: string
+      description: The marketplace's id
+      enum: [A2EUQ1WTGCTBG2, A1AM78C64UM0Y8, ATVPDKIKX0DER, A1PA6795UKMFR9, A1RKKUPIHCS9HS, A13V1IB3VIYZZH, APJ6JRA9NG5V4, A1F83G8C2ARO7P, A21TJRUUN4KGV, A1VC38T7YXB528, AAHKV2X7AFYLW]
+
+    #####################################
+    'MarketplaceName':
+      type: string
+      description: The marketplace's name
+      example: amazon.de
+
+
+    #####################################
+    'MerchantsName':
+      type: array
+      items:
+        $ref: '#/components/schemas/MerchantName'
+
+    #####################################
+    'MerchantsId':
+      type: array
+      items:
+        $ref: '#/components/schemas/MerchantId'
+
+    #####################################
+    'Merchant':
+      type: object
+      properties:
+        'id':
+          $ref: '#/components/schemas/MerchantId'
+        'name':
+          $ref: '#/components/schemas/MerchantName'
+
+
+    #####################################
+    'MerchantMarketplace':
+      type: object
+      properties:
+        'id':
+          $ref: '#/components/schemas/MerchantId'
+        'name':
+          $ref: '#/components/schemas/MerchantName'
+        'marketplaces':
+          type: array
+          items:
+            $ref: '#/components/schemas/Marketplace'
+
+    #####################################
+    'MerchantId':
+      type: string
+      description: The merchant's id
+      example: A123456789
+
+    #####################################
+    'MerchantName':
+      type: string
+      description: The merchant's name
+      example: Foobar GmbH
+
+
+    #####################################
+    'OptimizationRange':
+      type: object
+      description: the range of product's optimization score
+      properties:
+        'min':
+          $ref: '#/components/schemas/OptimizationRangeMin'
+        'max':
+          $ref: '#/components/schemas/OptimizationRangeMax'
+
+    #####################################
+    'OptimizationRangeMin':
+      type: integer
+      example: 1
+      description: "the minimum value of optimization score (min: 0)"
+
+    #####################################
+    'OptimizationRangeMax':
+      type: integer
+      example: 100
+      description: "the maximum value of optimization score (max: 100)"
+
+
+    #####################################
+    'PaginationRequest':
+      type: object
+      properties:
+        'page':
+          $ref: '#/components/schemas/PaginationPage'
+        'size':
+          $ref: '#/components/schemas/PaginationSize'
+
+    #####################################
+    'PaginationResponse':
+      type: object
+      properties:
+        'filtered':
+          $ref: '#/components/schemas/PaginationFiltered'
+
+
+    #####################################
+    'PaginationFiltered':
+      description: The number of total matched records
+      type: number
+      example: 123
+
+    #####################################
+    'PaginationPage':
+      description: The requested datapage (incombination with `size`)
+      type: number
+      example: 123
+
+    #####################################
+    'PaginationSize':
+      description: The number of requested / returned datasets
+      type: number
+      enum: [1,2,10,25,50,100,250,500,1000]
+      example: 123
+
+
+
+    #####################################
+    'PaginationTotal':
+      description: The number of total matched records
+      type: number
+      example: 123
+
+    #####################################
+    'PasswordMd5':
+      description: The user's password (md5-hashed)
+      type: string
+      example: 48be9724df98670e7c5297f8167ad7b7
+
+
+    #####################################
+    'PriceRange':
+      type: object
+      description: the price range
+      properties:
+        'min':
+          $ref: '#/components/schemas/PriceRangeMin'
+        'max':
+          $ref: '#/components/schemas/PriceRangeMax'
+
+    #####################################
+    'PriceRangeMin':
+      type: number
+      example: 10.01
+      description: "the minimum price for the products (min: 0)"
+
+
+    #####################################
+    'PriceRangeMax':
+      type: number
+      example: 10.99
+      description: "the maximum price for the products (max: 999999)"
+
+    #####################################
+    'Product':
+      type: object
+      properties:
+        'score':
+          $ref: '#/components/schemas/Score'
+        'amazon':
+          type: object
+          properties:
+            'asin':
+              $ref: '#/components/schemas/Asin'
+            'parent':
+              $ref: '#/components/schemas/Asin'
+            'type':
+              $ref: '#/components/schemas/ProductType'
+            'upc':
+              $ref: '#/components/schemas/Upc'
+            'title':
+              $ref: '#/components/schemas/ProductTitle'
+            'marketplace':
+              $ref: '#/components/schemas/Marketplace'
+            'brand':
+              $ref: '#/components/schemas/ProductBrand'
+            'category':
+              $ref: '#/components/schemas/Category'
+            'categories':
+              $ref: '#/components/schemas/Categories'
+            'attributes':
+              $ref: '#/components/schemas/ProductAttributes'
+            'preview':
+              $ref: '#/components/schemas/ProductPreview'
+            'images':
+              $ref: '#/components/schemas/ProductImages'
+            'reviews':
+              $ref: '#/components/schemas/ProductReviews'
+            'rating':
+              $ref: '#/components/schemas/ProductRating'
+            'buybox':
+              $ref: '#/components/schemas/ProductBuybox'
+            'available':
+              $ref: '#/components/schemas/ProductAvailable'
+            'prime':
+              $ref: '#/components/schemas/ProductPrime'
+            'description':
+              $ref: '#/components/schemas/ProductDescription'
+            'bulletpoints':
+              $ref: '#/components/schemas/ProductBulletpoints'
+        'amalyze':
+          type: object
+          properties:
+            'keywords':
+              $ref: '#/components/schemas/KeywordsCountPos'
+            'seo':
+              $ref: '#/components/schemas/ProductSeo'
+            'amascore':
+              $ref: '#/components/schemas/ProductAmascore'
+            'monitoring':
+              $ref: '#/components/schemas/ProductMonitoring'
+            'timestamps':
+              $ref: '#/components/schemas/ProductTimestamps'
+            'rankings':
+              $ref: '#/components/schemas/ProductRankings'
+        'success':
+          $ref: '#/components/schemas/ProductSuccess'
+        'error':
+          $ref: '#/components/schemas/Error'
+
+
+
+    #####################################
+    'ProductAdvertisingSpa':
+      type: boolean
+      enum: [true, false]
+      example: true
+      description: Indicats wheter there are sponsored products for this product
+
+
+    #####################################
+    'ProductAmascoreScore':
+      type: number
+      description: product's amascore
+      example: 1133
+
+    #####################################
+    'ProductAmascoreTrendAbsolute':
+      type: number
+      description: the change of amascore (absolute value)
+      example: 123
+
+    #####################################
+    'ProductAmascoreTrendRelative':
+      type: number
+      description: the change of amascore (relative value in percent)
+      example: 0.23
+
+    #####################################
+    'ProductAmascoreTrend':
+      type: object
+      properties:
+        'absolute':
+          $ref: '#/components/schemas/ProductAmascoreTrendAbsolute'
+        'relative':
+          $ref: '#/components/schemas/ProductAmascoreTrendRelative'
+
+
+    #####################################
+    'ProductAmascore':
+      type: object
+      properties:
+        'score':
+          $ref: '#/components/schemas/ProductAmascoreScore'
+        'trend':
+          $ref: '#/components/schemas/ProductAmascoreTrend'
+
+
+    #####################################
+    'ProductAvailable':
+      type: boolean
+      enum: [true, false]
+      example: true
+      description: Product's availbility
+
+
+    #####################################
+    'ProductBrandId':
+      type: string
+      description: Brand's id
+      example: "2da860f7216f34598e5cdc6fd7e3098c"
+
+    #####################################
+    'ProductBrandName':
+      type: string
+      description: Brand's name
+      example: Sony
+
+    #####################################
+    'ProductBrand':
+      type: object
+      properties:
+        'id':
+          $ref: '#/components/schemas/ProductBrandId'
+        'name':
+          $ref: '#/components/schemas/ProductBrandName'
+
+
+    #####################################
+    'ProductBrandsName':
+      type: array
+      items:
+        $ref: '#/components/schemas/ProductBrandName'
+
+    #####################################
+    'ProductBrands':
+      type: array
+      items:
+        $ref: '#/components/schemas/ProductBrand'
+
+    #####################################
+    'ProductBulletpoints':
+      type: array
+      items:
+        type: string
+        example: bulletpoint 1
+
+
+    #####################################
+    'ProductBuybox':
+      type: object
+      properties:
+        'merchant':
+          $ref: '#/components/schemas/Merchant'
+        'prices':
+          type: object
+          properties:
+            'offer':
+              $ref: '#/components/schemas/AmountCurrency'
+            'rrp':
+              $ref: '#/components/schemas/AmountCurrency'
+
+    #####################################
+    'ProductBuyboxBoolean':
+      type: boolean
+      enum: [true, false]
+      example: true
+      description: indicates, if the product has a buybox
+
+    #####################################
+    'ProductCategoryName':
+      type: string
+      description: Product's category name
+      example: House & Gardening
+
+    #####################################
+    'ProductDescription':
+      type: string
+      description: Product's description
+      example: lorem ipsum dolor sit amet
+
+
+    #####################################
+    'ProductMonitoring':
+      type: string
+      enum: ["simple","extended"]
+      description: The monitoring status
+
+
+    #####################################
+    'ProductImages':
+      type: object
+      properties:
+        'medium':
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductPreviewImg'
+
+    #####################################
+    'ProductPrime':
+      type: boolean
+      enum: [true, false]
+      example: true
+      description: Indicates where product is available for Prime
+
+
+    #####################################
+    'ProductAttributes':
+      type: object
+      properties:
+        'size':
+          $ref: '#/components/schemas/ProductSize'
+        'color':
+          $ref: '#/components/schemas/ProductColor'
+        'weight':
+          type: object
+          properties:
+            'item':
+              $ref: '#/components/schemas/ProductPropertiesWeight'
+            'package':
+              $ref: '#/components/schemas/ProductPropertiesWeight'
+        'dimension':
+          type: object
+          properties:
+            'item':
+              $ref: '#/components/schemas/ProductPropertiesDimension'
+            'package':
+              $ref: '#/components/schemas/ProductPropertiesDimension'
+        'custom':
+          type: array
+          description: array containing custom properties
+          items:
+            type: object
+            properties:
+              'name':
+                type: string
+                example: incredients
+              'value':
+                type: string
+                example: vitamine c
+
+
+
+
+    #####################################
+    'ProductPropertiesWeight':
+      type: object
+      properties:
+        'weight':
+          type: number
+          example: 0.78
+        'unit':
+          type: string
+          example: kg
+
+    #####################################
+    'ProductPropertiesDimension':
+      type: object
+      properties:
+        'length':
+          type: number
+          example: 12
+        'width':
+          type: number
+          example: 0.4
+        'height':
+          type: number
+          example: 0.75
+        'unit':
+          type: string
+          example: cm
+
+    #####################################
+    'ProductKeyword':
+      type: object
+      properties:
+        'score':
+          $ref: '#/components/schemas/Score'
+        'asin':
+          $ref: '#/components/schemas/Asin'
+        'marketplace':
+          $ref: '#/components/schemas/Marketplace'
+        'keyword':
+          $ref: '#/components/schemas/KeywordKeyword'
+        'positions':
+          type: object
+          properties:
+            'old':
+              type: object
+              properties:
+                'timestamp':
+                  type: string
+                  example: "2018-03-14T13:53:27+00:00"
+                  description: timestamp of the previous ranking
+                'position':
+                  type: integer
+                  example: 12
+                  description: the previous ranking position
+            'new':
+              type: object
+              properties:
+                'timestamp':
+                  type: string
+                  example: "2018-03-14T13:53:27+00:00"
+                  description: timestamp of the last ranking
+                'position':
+                  type: integer
+                  example: 12
+                  description: the previous last position
+            'change':
+              type: object
+              properties:
+                'value':
+                  description: The change of rankingposition |
+                    -999 => new
+                    999 => lost
+                    0 => equal
+                    < 0 => up
+                    > 0 > down
+                  example: -1
+                'type':
+                  type: string
+                  enum: ['up','down','equal','lost','new']
+
+
+    #####################################
+    'ProductReviews':
+      type: object
+      properties:
+        'total':
+          type: number
+          description: Number of total reviews
+          example: 123
+        'trend':
+          $ref: '#/components/schemas/ProductReviewsTrend'
+
+
+    #####################################
+    'ProductReviewsTrend':
+      type: object
+      properties:
+        'absolute':
+          $ref: '#/components/schemas/ProductReviewsTrendAbsolute'
+        'relative':
+          $ref: '#/components/schemas/ProductReviewsTrendRelative'
+
+    #####################################
+    'ProductReviewsTrendAbsolute':
+      type: number
+      example: 123
+      description: Reviews trend (absolut value)
+
+    #####################################
+    'ProductReviewsTrendRelative':
+      type: number
+      example: 0.12
+      description: Reviews trend (relativ value in percent)
+
+
+
+    #####################################
+    'ProductRating':
+      type: object
+      properties:
+        'score':
+          type: number
+          description: Product's review score (stars)
+          example: 4.3
+        'trend':
+          $ref: '#/components/schemas/ProductRatingTrend'
+
+    #####################################
+    'ProductRatingTrend':
+      type: object
+      properties:
+        'absolute':
+          $ref: '#/components/schemas/ProductRatingTrendAbsolute'
+        'relative':
+          $ref: '#/components/schemas/ProductRatingTrendRelative'
+    #####################################
+    'ProductRatingTrendAbsolute':
+      type: number
+      example: 123
+      description: Product's rating trend (absolut value)
+
+    #####################################
+    'ProductRatingTrendRelative':
+      type: number
+      example: 0.123
+      description: Product's rating trend (relative value in percent)
+
+
+
+    #####################################
+    'ProductSeoScore':
+      type: number
+      description: product's SEO score
+      example: 0.123
+
+    #####################################
+    'ProductSeo':
+      type: object
+      properties:
+        'score':
+          $ref: '#/components/schemas/ProductSeoScore'
+
+
+    #####################################
+    'ProductSuccess':
+      type: boolean
+      example: true
+      description: indicates if there are inforation existion for this product
+
+
+
+    #####################################
+    'ProductTimestamps':
+      type: object
+      properties:
+        'create':
+          $ref: '#/components/schemas/ProductTimestampsCreate'
+        'update':
+          $ref: '#/components/schemas/ProductTimestampsUpdate'
+
+
+    #####################################
+    'ProductTimestampsCreate':
+      type: string
+      example: "2018-03-14T13:53:27+00:00"
+      description: The date, when the product has been added to the AMALYZE database
+
+
+    #####################################
+    'ProductTimestampsUpdate':
+      type: string
+      example: "2018-03-14T13:53:27+00:00"
+      description: The date, the product has been last updated within the AMALYZE database
+
+
+    #####################################
+    'ProductTitle':
+      type: string
+      description: Product's title
+      example: F-BURN * 120 Kapseln * Guarana, gr\u00fcne Kaffeebohnen
+
+
+
+
+    #####################################
+    'ProductSize':
+      type: string
+      description: Product's size
+      example: XXL
+
+    #####################################
+    'ProductColor':
+      type: string
+      description: Product's color
+      example: black
+
+    #####################################
+    'ProductPreviewImg':
+      type: string
+      example: https://images-eu.ssl-images-amazon.com/images/I/31UXt51p80L.jpg
+      description: Product's image
+
+    #####################################
+    'ProductPreview':
+      type: object
+      properties:
+        medium:
+          $ref: '#/components/schemas/ProductPreviewImg'
+
+
+    #####################################
+    'ProductRankings':
+      type: object
+      properties:
+        'keyword':
+          type: object
+          properties:
+            'position':
+              type: number
+              example: 56
+              description: the products current keyword ranking position. Only available for method `research.keyword.rankings.get`
+            'type':
+              type: string
+              enum: ['spa', 'organic']
+              example: organic
+              description: indicates, if the product ranking for a specific keyword is an `organic` or `spa` result
+
+    #####################################
+    'ProductType':
+      type: string
+      enum: ['child', 'parent', 'standalone']
+
+    ####################################
+    'ProductTypes':
+      type: array
+      items:
+        $ref: '#/components/schemas/ProductType'
+
+    #####################################
+    'ProductsCountType':
+      type: number
+      description: Number of matching products
+      example: 123
+
+
+    #####################################
+    'ProductsCount':
+      type: object
+      properties:
+        'organic':
+          $ref: '#/components/schemas/ProductsCountType'
+        'advertising':
+          type: object
+          properties:
+            'spa':
+              $ref: '#/components/schemas/ProductsCountType'
+
+    #####################################
+    'Rate':
+      type: number
+      example: 0.23
+
+    #####################################
+    'RatingRange':
+      type: object
+      description: the range of average rating (stars)
+      properties:
+        'min':
+          $ref: '#/components/schemas/RatingRangeMin'
+        'max':
+          $ref: '#/components/schemas/RatingRangeMax'
+
+    #####################################
+    'RatingRangeMin':
+      type: number
+      example: 1.12
+      description: "the minimum rating for the products (min: 0)"
+
+
+    #####################################
+    'RatingRangeMax':
+      type: number
+      example: 4.73
+      description: "the maximum rating for the products (max: 5)"
+
+
+    #####################################
+    'ReviewsRange':
+      type: object
+      description: the range of average rating (stars)
+      properties:
+        'min':
+          $ref: '#/components/schemas/RatingRangeMin'
+        'max':
+          $ref: '#/components/schemas/RatingRangeMax'
+
+    #####################################
+    'ReviewsRangeMin':
+      type: number
+      example: 1.12
+      description: "the minimum numbers of reviews rating for the products (min: 0)"
+
+
+    #####################################
+    'ReviewsRangeMax':
+      type: number
+      example: 4.73
+      description: "the maximum number of reviews for the products (max: 999999)"
+
+    #####################################
+    'Sku':
+      type: string
+      example: ABCDE
+
+    #####################################
+    'Skus':
+      type: array
+      items:
+        $ref: '#/components/schemas/Sku'
+
+    #####################################
+    'SkuCheck':
+      type: object
+      properties:
+        'asin':
+          $ref: '#/components/schemas/Asin'
+        'marketplace':
+          $ref: '#/components/schemas/MarketplaceId'
+        'sku':
+          $ref: '#/components/schemas/Sku'
+        'success':
+          type: boolean
+          example: true
+          description: indicates whether the asin is existing on the marketplace
+        'monitoring':
+          type: boolean
+          example: true
+          description: indicates wheter the asin exists already in the AMALYZE monitoring
+        'error':
+          $ref: '#/components/schemas/Error'
+
+
+
+    #####################################
+    'Recovery':
+      type: object
+      properties:
+        captcha:
+          $ref: '#/components/schemas/Captcha'
+        email:
+          $ref: '#/components/schemas/Email'
+
+
+
+    #####################################
+    'Request':
+      type: object
+      properties:
+        'id':
+          type: string
+          example: 1c320ef0-8c53-4137-9ad8-a4eb839976df
+          description: the id of the request
+        'took':
+          type: number
+          example: 0.0092
+          description: the execution time in seconds
+        'cost':
+          type: integer
+          example: 10
+          description: the used credits for this api call
+        'remaining':
+          type: integer
+          example: 999999999
+          description: the remaining credits for further api calls
+        'method':
+          type: string
+          example: System.User.Login
+          description: the called method
+        'success':
+          type: boolean
+          example: true
+          description: true if request was successfully executed
+        'error':
+          $ref: '#/components/schemas/Error'
+
+
+
+
+
+
+
+    #####################################
+    'Username':
+      description: The username
+      type: string
+      example: jon.doe@example.com
+
+    #####################################
+    'Score':
+      description: |
+        The relevance score of the returned item; relevancy not regarding Amazon but regarding the performed
+        database search. Exists only if there has been a fulltext search
+      type: number
+      example: 123
+
+
+    #####################################
+    'SortingDirection':
+      description: The sorting direction
+      type: string
+      enum: ['asc', 'desc']
+
+
+
+    #####################################
+    'SystemNavigation':
+      type: array
+      description: provides information about the user's navigation
+      items:
+        type: object
+        properties:
+          'name':
+            type: string
+            example: Nav Level 1
+            description: the navigation item's name
+          'icon':
+            type: string
+            example: fa-flask
+            description: the navigation item's icon
+          'disabled':
+            type: boolean
+            example: true
+            description: indicates if the navigation item is disabled
+          'absolute':
+            type: boolean
+            example: false
+            description: indicates wheter the navigation.method is an absolute (true) or relative (false) path
+          'route':
+            type: string
+            example: System.User.Edit
+            description: The URL the user shall be routed to
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                'name':
+                  type: string
+                  example: Nav Level 1.1
+                'icon':
+                  type: string
+                'disabled':
+                  type: boolean
+                'method':
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      ...:
+                        type: string
+                        example: ...
+
+    #####################################
+    'SystemUser':
+      type: object
+      properties:
+        'id':
+          type: string
+          example: 111-55555-88888888
+          description: the user's unique id
+        'username':
+          type: string
+          example: jondoe@example.com
+          description: the user's username
+        'firstname':
+          type: string
+          example: Jon
+          description: the user's firstname
+        'lastname':
+          type: string
+          example: Doe
+          description: the user's lastname
+        'email':
+          type: string
+          example: jondoe@example.com
+          description: the user's email address
+        'entity':
+          $ref: '#/components/schemas/SystemEntity'
+
+    #####################################
+    'SystemEntity':
+      type: object
+      description: the user's entity
+      properties:
+        'id':
+          type: string
+          example: 222-33333-88888888
+          description: the unique id of the user's entity
+        'company':
+          type: string
+          example: Mustermann GmbH
+          description: the company name
+        'street':
+          type: string
+          example: Musterstr. 11
+          description: the company's address
+        'zip':
+          type: string
+          example: 12345
+          description: the company's zip code
+        'city':
+          type: string
+          example: Musterstadt
+          description: the company's city
+        'phone':
+          type: string
+          example: +49 89 7007 4627 0
+          description: the company's phone number
+        'fax':
+          type: string
+          example: +49 89 7007 4627 999
+          description: the company's fax number
+        'email':
+          type: string
+          example: info@mustermann.de
+          description: the company's mail email address
+        'modules':
+          $ref: '#/components/schemas/SystemEntityModules'
+
+    #####################################
+    'SystemEntityModules':
+      type: object
+      description: Entites module settings
+      properties:
+        'research':
+          type: object
+          properties:
+            'marketplaces':
+              type: array
+              items:
+                $ref: '#/components/schemas/Marketplace'
+        'advertising':
+          type: array
+          items:
+            type: object
+            properties:
+              'merchant':
+                $ref: '#/components/schemas/Merchant'
+              'marketplaces':
+                type: array
+                items:
+                  $ref: '#/components/schemas/Marketplace'
+
+
+    #####################################
+    'Upc':
+      type: string
+      example: '95212781578'
+      description: product's UPC
+
+    #####################################
+    'Upcs':
+      type: array
+      items:
+        $ref: '#/components/schemas/Upc'
+
+
+
+  parameters:
+    #####################################
+    'x-xsrf-token':
+      in: header
+      name: X-XSRF-TOKEN
+      schema:
+        type: string
+      required: true
+
+    #####################################
+    'x-falcon-token':
+      in: header
+      name: X-FALCON-TOKEN
+      schema:
+        type: string
+      required: true
+
+  responses:
+    '200':
+      description: Successfull response
+      content:
+        '*/*':
+          schema:
+            type: object
+            properties:
+              request:
+                $ref: '#/components/schemas/Request'
+    '401':
+      description: Access denied for requested Object
+      content:
+        '*/*':
+          schema:
+            type: object
+            properties:
+              request:
+                $ref: '#/components/schemas/Request'
+    '403':
+      description: Forbidden
+      content:
+        '*/*':
+          schema:
+            type: object
+            properties:
+              request:
+                $ref: '#/components/schemas/Request'
+    '404':
+      description: Object not found.
+      content:
+        '*/*':
+          schema:
+            type: object
+            properties:
+              request:
+                $ref: '#/components/schemas/Request'
+    '429':
+      description: Access denied. To many requests
+      content:
+        '*/*':
+          schema:
+            type: object
+            properties:
+              request:
+                $ref: '#/components/schemas/Request'
+    '500':
+      description: An error occured. See 'request.error' for more information
+      content:
+        '*/*':
+          schema:
+            type: object
+            properties:
+              request:
+                $ref: '#/components/schemas/Request'
