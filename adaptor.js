@@ -918,13 +918,16 @@ function transform(api, defaults, callback) {
                 }
             });
             model.vars = convertArray(model.vars);
-            model.importModels = model.vars.filter(entry => entry.type4Import).map(entry => entry.type4Import);
-            model.hasImportModels = !!model.importModels.length;
+            const importModels = model.vars.filter(entry => entry.type4Import).map(entry => entry.type4Import);
+            model.importModels = importModels.join(', ');
+            model.hasImportModels = !!importModels.length;
             container.model = model;
             container.importPath = model.name;
             obj.models.push(container);
         }
     }
+
+    obj.models = convertArray(obj.models);
 
     if (obj.models.length === 0) {
         obj.models = { isEmpty: true };

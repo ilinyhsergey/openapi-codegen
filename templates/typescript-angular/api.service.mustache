@@ -8,13 +8,13 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpUrlEncodingCodec }                        from '../encoder';
 {{/useHttpClient}}
 {{^useHttpClient}}
-import { Http, Headers, URLSearchParams }                    from '@angular/http';
+import { Http, Headers, URLSearchParams } from '@angular/http';
 import { RequestMethod, RequestOptions, RequestOptionsArgs } from '@angular/http';
-import { Response, ResponseContentType }                     from '@angular/http';
-import { CustomQueryEncoderHelper }                          from '../encoder';
+import { Response, ResponseContentType } from '@angular/http';
+import { CustomQueryEncoderHelper } from '../encoder';
 {{/useHttpClient}}
 
-import { Observable }                                        from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable';
 {{^useHttpClient}}
 import '../rxjs-operators';
 {{/useHttpClient}}
@@ -23,12 +23,12 @@ import '../rxjs-operators';
 // import { {{classname}} } from '../{{filename}}';
 {{/imports}}
 
-import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
-import { Configuration }                                     from '../configuration';
+import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
+import { Configuration } from '../configuration';
 {{#withInterfaces}}
-import { {{classname}}Interface }                            from './{{classFilename}}Interface';
+import { {{classname}}Interface } from './{{classFilename}}Interface';
 {{/withInterfaces}}
-import { {{#models}}{{#model}}{{classname}}{{/model}}{{^-last}},{{/-last}}{{/models}} } from '../model/models';
+import { {{#models}}{{#model}}{{classname}}{{/model}}{{^-last}}, {{/-last}}{{/models}} } from '../model/models';
 
 {{#operations}}
 
