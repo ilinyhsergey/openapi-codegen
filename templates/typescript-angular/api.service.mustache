@@ -23,16 +23,12 @@ import '../rxjs-operators';
 // import { {{classname}} } from '../{{filename}}';
 {{/imports}}
 
-{{#models}}{{#model}}
-import { {{classname}} } from '../model/{{classFilename}}';
-{{/model}}{{/models}}
-
-
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 {{#withInterfaces}}
 import { {{classname}}Interface }                            from './{{classFilename}}Interface';
 {{/withInterfaces}}
+import { {{#models}}{{#model}}{{classname}}{{/model}}{{^-last}},{{/-last}}{{/models}} } from '../model/models';
 
 {{#operations}}
 
