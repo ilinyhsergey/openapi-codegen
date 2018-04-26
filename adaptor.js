@@ -514,7 +514,7 @@ const typeMaps = {
             }
         } else if (type === 'array') {
             if (schema.items && schema.items.type) {
-                result = typeMap(schema.items.type,false,schema.items)+'[]';
+                result = 'Array<'+ typeMap(schema.items.type,false,schema.items)+'>';
             } else {
                 result = '[]';
             }
