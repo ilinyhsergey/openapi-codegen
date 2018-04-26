@@ -847,6 +847,7 @@ function transform(api, defaults, callback) {
             model.modelPackage = model.name;
             model.hasEnums = false;
             model.vars = [];
+            handleEnum(schema, model);
             walkSchema(schema,{},wsGetState,function(schema,parent,state){
                 let entry = {};
                 entry.name = schema.name || schema.title;
@@ -948,6 +949,17 @@ function transform(api, defaults, callback) {
 
     if (callback) callback(null,obj);
     return obj;
+}
+
+function handleEnum(schema, model) {
+    if (schema.enum) {
+        model.isEnum = true;
+        model.allowableValues = {
+            enumVars: convertArray(schema.enum.map(v => ({ name: v, value: v })))
+        };
+        model['allowableValues.values'] = schema.enum;
+    }
+    return model;
 }
 
 module.exports = {
