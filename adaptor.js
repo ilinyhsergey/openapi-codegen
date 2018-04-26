@@ -854,8 +854,8 @@ function transform(api, defaults, callback) {
             model.modelPackage = model.name;
             model.hasEnums = false;
             model.vars = [];
-            handleEnum(schema, model);
-            handleAlias(schema, model);
+            model = handleEnum(schema, model);
+            model = handleAlias(schema, model);
             walkSchema(schema,{},wsGetState,function(schema,parent,state){
                 let entry = {};
                 entry.name = schema.name || schema.title;
@@ -902,16 +902,7 @@ function transform(api, defaults, callback) {
                 entry.dataFormat = schema.format;
                 entry.defaultValue = schema.default;
 
-                if (entry.isEnum) {
-                    model.allowableValues = {};
-                    model.allowableValues.enumVars = [];
-                    model["allowableValues.values"] = schema.enum;
-                    for (let v of schema.enum) {
-                        let e = { name: v, value: v };
-                        model.allowableValues.enumVars.push(e);
-                    }
-                    model.allowableValues.enumVars = convertArray(model.allowableValues.enumVars);
-                }
+                entry = handleEnum(schema, entry);
 
                 if (entry.name && state.depth<=1) {
                     // entry.nameInCamelCase = Case.pascal(entry.name); // for erlang-client
