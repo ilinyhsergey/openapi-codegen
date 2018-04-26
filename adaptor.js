@@ -504,10 +504,14 @@ const typeMaps = {
     },
     typescript: function(type,required,schema) {
         let result = type;
-        if (type === 'integer'){
+        if (type === 'integer' || type === 'number'){
             result = 'number';
         } else if (type === 'string') {
-            result = 'string';
+            if (schema.format === 'date' || schema.format === 'date-time') {
+                result = 'Date';
+            } else {
+                result = 'string';
+            }
         } else if (type === 'array') {
             if (schema.items && schema.items.type) {
                 result = typeMap(schema.items.type,false,schema.items)+'[]';
@@ -518,7 +522,7 @@ const typeMaps = {
             if (schema && schema["x-oldref"]) {
                 result = schema["x-oldref"].replace('#/components/schemas/','');
             } else {
-                result = 'object';
+                result = 'object'; // for inline object
             }
         }
         return result;
