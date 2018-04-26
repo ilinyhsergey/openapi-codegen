@@ -509,9 +509,10 @@ const typeMaps = {
         } else if (type === 'string') {
             result = 'string';
         } else if (type === 'array') {
-            result = 'Array';
             if (schema.items && schema.items.type) {
-                result += '<'+typeMap(schema.items.type,false,schema.items)+'>';
+                result = typeMap(schema.items.type,false,schema.items)+'[]';
+            } else {
+                result = '[]';
             }
         } else if (type === 'object') {
             result = (schema && schema.xml && schema.xml.name) || 'object';
@@ -842,12 +843,15 @@ function transform(api, defaults, callback) {
             model.classVarName = s;
             model.modelJson = safeJson(schema,null,2);
             model.title = schema.title;
+            model.description = schema.description;
             model.unescapedDescription = schema.description;
+            model.example = schema.example;
             model.classFilename = obj.classPrefix+model.name;
             model.modelPackage = model.name;
             model.hasEnums = false;
             model.vars = [];
             handleEnum(schema, model);
+            handleAlias(schema, model);
             walkSchema(schema,{},wsGetState,function(schema,parent,state){
                 let entry = {};
                 entry.name = schema.name || schema.title;
@@ -958,6 +962,14 @@ function handleEnum(schema, model) {
             enumVars: convertArray(schema.enum.map(v => ({ name: v, value: v })))
         };
         model['allowableValues.values'] = schema.enum;
+    }
+    return model;
+}
+
+function handleAlias(schema, model) {
+    if (!schema.enum && schema.type !== 'object') {
+        model.isAlias = true;
+        model.dataType = typeMap(schema.type, undefined, schema);
     }
     return model;
 }

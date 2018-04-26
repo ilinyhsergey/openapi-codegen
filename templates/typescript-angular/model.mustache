@@ -5,12 +5,17 @@
 import { {{classname}} } from './{{filename}}';
 {{/tsImports}}
 {{#hasImportModels}}import { {{importModels}} } from './models';{{/hasImportModels}}
-
 {{#description}}
 /**
- * {{{description}}}
+ * {{{description}}}{{#example}}
+ *
+ * Example: "{{{example}}}"{{/example}}
  */
-{{/description}}
+{{/description}}{{^description}}{{#example}}
+/**
+ * Example: "{{{example}}}"
+ */
+{{/example}}{{/description}}
 {{#isEnum}}{{>modelEnum}}{{/isEnum}}{{^isEnum}}{{#isAlias}}{{>modelAlias}}{{/isAlias}}{{^isAlias}}{{#taggedUnions}}{{>modelTaggedUnion}}{{/taggedUnions}}{{^taggedUnions}}{{>modelGeneric}}{{/taggedUnions}}{{/isAlias}}{{/isEnum}}
 {{/model}}
 {{/models}}
