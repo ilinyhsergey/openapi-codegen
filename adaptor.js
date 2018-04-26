@@ -133,7 +133,8 @@ function convertOperation(op,verb,path,pathItem,obj,api) {
     operation.path = path;
     operation.replacedPathName = path; //?
 
-    operation.operationId = op.operationId||('operation'+obj.openapi.operationCounter++);
+    // operation.operationId = op.operationId||('operation'+obj.openapi.operationCounter++);
+    operation.operationId = op.operationId || (verb + Case.pascal(path));
     operation.operationIdLowerCase = operation.operationId.toLowerCase();
     operation.operationIdSnakeCase = Case.snake(operation.operationId);
     operation.nickname = operation.operationId;
@@ -187,6 +188,7 @@ function convertOperation(op,verb,path,pathItem,obj,api) {
         parameter.isBodyParam = false;
         parameter.isFormParam = false;
         parameter.paramName = param.name;
+        parameter.paramName = Case.camel(parameter.paramName);
         parameter.baseName = param.name;
         parameter.required = param.required||false;
         parameter.optional = !parameter.required;
