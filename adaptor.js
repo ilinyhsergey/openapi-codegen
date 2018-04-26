@@ -538,18 +538,22 @@ const typeMaps = {
     }
 };
 
-const type4ImportMaps = {
-    nop: function(type,required,schema) {
+const importTypeMaps = {
+    nop: function(type, schema) {
         return undefined;
     },
-    typescript: function(type,required,schema) {
+    typescript: function(type, schema) {
         let result = '';
         if (type === 'array') {
             if (schema.items && schema.items.type) {
-                result = type4ImportMap(schema.items.type,false,schema.items);
+                result = importTypeMap(schema.items.type, schema.items);
             }
         } else if (type === 'object') {
-            result = (schema && schema.xml && schema.xml.name) || '';
+            if (schema && schema["x-oldref"]) {
+                result = schema["x-oldref"].replace('#/components/schemas/','');
+            } else {
+                result = '';
+            }
         }
         return result;
     }
@@ -561,7 +565,7 @@ const reservedWords = {
 };
 
 let typeMap = typeMaps.nop;
-let type4ImportMap = type4ImportMaps.nop;
+let importTypeMap = importTypeMaps.nop;
 let markdownPP = markdownPPs.nop;
 let reserved = reservedWords.nop;
 
@@ -709,7 +713,7 @@ function transform(api, defaults, callback) {
 
     let lang = (defaults.language||'').toLowerCase();
     if (typeMaps[lang]) typeMap = typeMaps[lang];
-    if (type4ImportMaps[lang]) type4ImportMap = type4ImportMaps[lang];
+    if (importTypeMaps[lang]) importTypeMap = importTypeMaps[lang];
     if (reservedWords[lang]) reserved = reservedWords[lang];
 
     let prime = getPrime(api,defaults); // defaults which depend in some way on the api definition
@@ -884,7 +888,7 @@ function transform(api, defaults, callback) {
                 entry.isNotRequired = !entry.required;
                 entry.readOnly = !!schema.readOnly;
                 entry.type = typeMap(schema.type,entry.required,schema);
-                entry.type4Import = type4ImportMap(schema.type,entry.required,schema);
+                entry._importType = importTypeMap(schema.type, schema);
                 entry.datatype = entry.type; //?
                 entry.jsonSchema = safeJson(schema,null,2);
                 for (let p in schemaProperties) {
@@ -918,9 +922,14 @@ function transform(api, defaults, callback) {
                 }
             });
             model.vars = convertArray(model.vars);
-            const importModels = model.vars.filter(entry => entry.type4Import).map(entry => entry.type4Import);
-            model.importModels = importModels.join(', ');
-            model.hasImportModels = !!importModels.length;
+
+            model.tsImports = model.vars
+                .filter(v => v._importType)
+                .map(v => ({
+                    classname: v._importType,
+                    filename: v._importType
+                }));
+
             container.model = model;
             container.importPath = model.name;
             obj.models.push(container);
