@@ -515,7 +515,11 @@ const typeMaps = {
                 result = '[]';
             }
         } else if (type === 'object') {
-            result = (schema && schema.xml && schema.xml.name) || 'object';
+            if (schema && schema["x-oldref"]) {
+                result = schema["x-oldref"].replace('#/components/schemas/','');
+            } else {
+                result = 'object';
+            }
         }
         return result;
     },
