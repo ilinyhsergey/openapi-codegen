@@ -2021,7 +2021,7 @@ components:
           items:
             type: string
             example: "keyword A"
-            description: the related keywords to search for
+          description: the related keywords to search for
 
 
 
@@ -2063,7 +2063,7 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/MarketplaceId'
-        example: "A12345678"
+      example: "A12345678"
 
     #####################################
     'MarketplaceId':
@@ -2385,7 +2385,7 @@ components:
       type: array
       items:
         type: string
-        example: bulletpoint 1
+      example: bulletpoint 1
 
 
     #####################################
